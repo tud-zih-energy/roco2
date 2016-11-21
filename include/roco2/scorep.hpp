@@ -1,0 +1,6 @@
+#ifndef INCLUDE_ROCO2_SCOREP_HPP
+#define INCLUDE_ROCO2_SCOREP_HPP
+
+#include <scorep/SCOREP_User.h>
+
+#endif //INCLUDE_ROCO2_SCOREP_HPP
