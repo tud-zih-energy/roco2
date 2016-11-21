@@ -1,8 +1,8 @@
 #ifndef INCLUDE_ROCO2_KERNELS_ADDPD_HPP
 #define INCLUDE_ROCO2_KERNELS_ADDPD_HPP
 
+#include <roco2/kernels/asm_kernels.h>
 #include <roco2/kernels/base_kernel.hpp>
-#include <roco2/kernels/sqrt_kernels.h>
 #include <roco2/memory/thread_local.hpp>
 #include <roco2/metrics/utility.hpp>
 #include <roco2/scorep.hpp>
