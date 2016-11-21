@@ -41,39 +41,32 @@ SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
 SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3") # -funroll-loops")
 
 find_package(OpenMP REQUIRED)
-if (OPENMP_FOUND)
+if (OpenMP_FOUND)
     set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 endif()
 
-# find_package(LAPACK)
-# add_definitions(-DUSE_CBLAS)
-
-# SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mkl")
-
-set(MKL_SDL "ON")
-find_package(MKL REQUIRED)
-if (MKL_FOUND)
-    include_directories(SYSTEM ${MKL_INCLUDE_DIRS})
-
+option(USE_MKL "Whether to use MKL or LAPACK for matmul kernel" ON)
+if(USE_MKL)
     # set definition to use MKL in matmul kernel
-    add_definitions(-DUSE_MKL)
+    set(MKL_SDL "ON")
+    find_package(MKL REQUIRED)
+    if (MKL_FOUND)
+        include_directories(SYSTEM ${MKL_INCLUDE_DIRS})
+
+        add_definitions(-DUSE_MKL)
+    endif()
+else()
+    find_package(LAPACK REQUIRED)
+    add_definitions(-DUSE_CBLAS)
 endif()
-
-
-# check for building with icc
-# if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
-#     message(FATAL_ERROR "This software only supports Intel Composer XE as the used compiler")
-# endif()
 
 # quirk for CMAKE 3.0 and newer
 cmake_policy(SET CMP0026 OLD)
 
-find_package(Scorep REQUIRED)
+find_package(Scorep)
 if (SCOREP_FOUND)
     include_directories(SYSTEM ${SCOREP_INCLUDE_DIRS})
-else()
-    message(FATAL_ERROR "Score-P wasn't found, but is mandatory.")
 endif()
 
 find_package(LibNuma REQUIRED)

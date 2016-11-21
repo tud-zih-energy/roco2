@@ -1,8 +1,10 @@
 #ifndef INCLUDE_ROCO2_INITIALIZE_HPP
 #define INCLUDE_ROCO2_INITIALIZE_HPP
 
+#include <roco2/chrono/chrono.hpp>
 #include <roco2/cpu/affinity.hpp>
 #include <roco2/cpu/info.hpp>
+#include <roco2/cpu/topology.hpp>
 #include <roco2/log.hpp>
 #include <roco2/memory/thread_local.hpp>
 #include <roco2/metrics/experiment.hpp>
@@ -12,7 +14,6 @@
 
 #include <omp.h>
 
-#include <chrono>
 #include <thread>
 #include <vector>
 
@@ -25,6 +26,10 @@ public:
     static void master()
     {
         SCOREP_USER_REGION("master_init", SCOREP_USER_REGION_TYPE_FUNCTION)
+
+        // initialize the cpu topology structure
+        auto& topology = roco2::cpu::topology::instance();
+        (void)topology;
 
         roco2::metrics::experiment::instance().write(1);
         roco2::metrics::threads::instance().write(1);
@@ -40,9 +45,9 @@ public:
 #endif
     }
 
-    template <typename Duration>
-    static std::chrono::high_resolution_clock::time_point
-    thread(std::chrono::high_resolution_clock::time_point start_point, Duration experiment_duration)
+    static roco2::chrono::time_point thread(roco2::chrono::time_point start_point,
+                                            roco2::chrono::duration experiment_duration,
+                                            bool eta_only)
     {
         SCOREP_USER_REGION("thread_init", SCOREP_USER_REGION_TYPE_FUNCTION)
 
@@ -78,17 +83,20 @@ public:
 
 #pragma omp barrier
 
-        auto now = std::chrono::high_resolution_clock::now();
+        auto now = roco2::chrono::now();
 
         while (now >= then)
         {
             then += experiment_duration;
-            now = std::chrono::high_resolution_clock::now();
+            now = roco2::chrono::now();
         }
 
-        log::info() << "Starting at: " << then.time_since_epoch().count();
+        if (!eta_only)
+        {
+            log::info() << "Starting at: " << then.time_since_epoch().count();
 
-        std::this_thread::sleep_until(then);
+            std::this_thread::sleep_until(then);
+        }
 
         roco2::metrics::utility::instance().write(1);
         roco2::metrics::experiment::instance().write(1);

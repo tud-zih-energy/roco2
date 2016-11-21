@@ -4,6 +4,7 @@
 #include <roco2/chrono/util.hpp>
 
 #include <chrono>
+#include <iostream>
 
 namespace roco2
 {
@@ -11,6 +12,11 @@ namespace chrono
 {
     using time_point = std::chrono::high_resolution_clock::time_point;
     using duration = time_point::duration;
+
+    static time_point now()
+    {
+        return std::chrono::high_resolution_clock::now();
+    }
 }
 }
 
