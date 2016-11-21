@@ -15,8 +15,18 @@ endif()
 
 include(CTest)
 
+# Intialize git submodules if not done already
+file(GLOB SUBMODULE_FILES "lib/nitro/*")
+list(LENGTH SUBMODULE_FILES COUNT_NITRO)
+if(${COUNT_NITRO} EQUAL 0)
+    message(STATUS "Initializing git submodule")
+    execute_process(COMMAND "git" "submodule" "init" WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
+endif()
+message(STATUS "Updating git submodule")
+execute_process(COMMAND "git" "submodule" "update" WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
+
 # enable C++11
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -pedantic")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -Wextra -pedantic")
 
 #enable C99
 SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
@@ -98,6 +108,8 @@ if(ROCO2_ASSERTIONS)
 endif()
 
 add_definitions(-DREGONLY)
+
+include(lib/nitro/Nitro.cmake)
 
 include(cmake/Roco2Configuration.cmake)
 
