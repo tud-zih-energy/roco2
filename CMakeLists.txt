@@ -64,7 +64,7 @@ endif()
 # quirk for CMAKE 3.0 and newer
 cmake_policy(SET CMP0026 OLD)
 
-find_package(Scorep)
+find_package(Scorep REQUIRED)
 if (SCOREP_FOUND)
     include_directories(SYSTEM ${SCOREP_INCLUDE_DIRS})
 endif()

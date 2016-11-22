@@ -1,8 +1,8 @@
 
 macro(Roco2Configuration CONF )
-    add_executable(roco2_${CONF} ${CONF}/main.cpp)
+    add_executable(roco2_${CONF} ${CONF}/experiment.cpp)
 
-    target_link_libraries(roco2_${CONF} ${LAPACK_LIBRARIES} ${LIBNUMA_LIBRARIES} ${MKL_LIBRARIES} firestarter fastcpufreq ${CPUFREQ_LIBRARIES} roco2_core)
+    target_link_libraries(roco2_${CONF} ${LAPACK_LIBRARIES} ${LIBNUMA_LIBRARIES} ${MKL_LIBRARIES} fastcpufreq ${CPUFREQ_LIBRARIES} roco2_core)
 
     set_target_properties(roco2_${CONF} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${CONF}")
 
