@@ -60,6 +60,11 @@ public:
             is_master = true;
         }
 
+        if (eta_only)
+        {
+            return start_point + experiment_duration;
+        }
+
         if (!is_master)
         {
             roco2::metrics::experiment::instance().write(1);
@@ -91,12 +96,9 @@ public:
             now = roco2::chrono::now();
         }
 
-        if (!eta_only)
-        {
-            log::info() << "Starting at: " << then.time_since_epoch().count();
+        log::info() << "Starting at: " << then.time_since_epoch().count();
 
-            std::this_thread::sleep_until(then);
-        }
+        std::this_thread::sleep_until(then);
 
         roco2::metrics::utility::instance().write(1);
         roco2::metrics::experiment::instance().write(1);
