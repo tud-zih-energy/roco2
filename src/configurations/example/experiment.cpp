@@ -3,7 +3,7 @@
 #include <roco2/kernels/addpd.hpp>
 #include <roco2/kernels/busy_wait.hpp>
 #include <roco2/kernels/compute.hpp>
-#include <roco2/kernels/firestarter.hpp>
+// #include <roco2/kernels/firestarter.hpp>
 #include <roco2/kernels/high_low.hpp>
 #include <roco2/kernels/idle.hpp>
 #include <roco2/kernels/matmul.hpp>
@@ -91,7 +91,7 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
                 experiment(mulpd, on);
                 experiment(squareroot, on);
                 experiment(mm, on);
-                experiment(fs, on);
+                // experiment(fs, on);
             }
         }
     }
