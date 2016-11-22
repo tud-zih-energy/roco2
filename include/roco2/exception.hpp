@@ -40,8 +40,7 @@ namespace detail
 }
 
 template <typename... Args>
-inline void raise(Args... args)
-__attribute__ ((noreturn))
+[[noreturn]] inline void raise(Args... args)
 {
     std::stringstream msg;
 
