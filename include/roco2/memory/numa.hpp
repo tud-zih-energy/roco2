@@ -20,8 +20,7 @@ namespace memory
         public:
             numa_bitmask()
             {
-                mask_ =
-                    numa_bitmask_alloc((unsigned int)numa_max_possible_node());
+                mask_ = numa_bitmask_alloc((unsigned int)numa_max_possible_node());
             }
 
             explicit numa_bitmask(bitmask* p) : mask_(p)
@@ -60,6 +59,16 @@ namespace memory
                 numa_bitmask_setbit(mask_, bit);
             }
 
+            friend bool operator==(const numa_bitmask& a, const numa_bitmask& b)
+            {
+                return numa_bitmask_equal(a.mask_, b.mask_);
+            }
+
+            friend bool operator==(const numa_bitmask& a, const numa_bitmask& b)
+            {
+                return !(a == b);
+            }
+
         private:
             bitmask* mask_;
         };
@@ -67,8 +76,7 @@ namespace memory
     public:
         numa_bind_local()
         {
-            int numa_node =
-                numa_node_of_cpu(roco2::cpu::info::current_cpu());
+            int numa_node = numa_node_of_cpu(roco2::cpu::info::current_cpu());
 
             if (numa_node == -1)
             {
@@ -78,11 +86,19 @@ namespace memory
             }
 
             numa_bitmask mask;
-
             mask.clear_all();
             mask.set_bit(static_cast<unsigned int>(numa_node));
-
             numa_set_membind(mask);
+
+            numa_bitmask check;
+            numa_get_bitmask(check);
+
+            if (mask != check)
+            {
+                log::warn() << "Couldn't bound on local numa node";
+
+                return;
+            }
 
             log::info() << "Bound on local numa node";
         }
