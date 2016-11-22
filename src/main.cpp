@@ -4,6 +4,8 @@
 
 #include <roco2/chrono/chrono.hpp>
 
+#include <nitro/broken_options/parser.hpp>
+
 #include <string>
 
 #include <omp.h>
@@ -36,6 +38,8 @@ int main(int argc, char** argv)
             nitro::log::severity_level::info);
     }
 
+    bool eta_only = options.given("eta_only");
+
     // TODO: What is this for?
     omp_set_dynamic(0);
 
@@ -47,11 +51,12 @@ int main(int argc, char** argv)
     // Therefore we have this boolean flag here.
     bool exception_happend = false;
 
-#pragma omp parallel default(shared) shared(starting_point, exception_happend)
+#pragma omp parallel default(shared) shared(starting_point,                                        \
+                                            exception_happend) firstprivate(eta_only)
     {
         try
         {
-            run_experiments(starting_point, options.given("eta_only"));
+            run_experiments(starting_point, eta_only);
         }
         catch (std::exception& e)
         {
