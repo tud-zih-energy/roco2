@@ -24,6 +24,15 @@ namespace cpu
 {
     class ddcm
     {
+#ifndef HAS_X86ADAPT
+        template <bool value = false>
+        class assert_dummy
+        {
+            static_assert(value, "x86_adapt is not available, thus ddcm() cannot be used.");
+        };
+
+        const std::size_t dummy = sizeof(assert_dummy);
+#endif
     public:
         ddcm()
         {
