@@ -64,7 +64,7 @@ namespace memory
                 return numa_bitmask_equal(a.mask_, b.mask_);
             }
 
-            friend bool operator==(const numa_bitmask& a, const numa_bitmask& b)
+            friend bool operator!=(const numa_bitmask& a, const numa_bitmask& b)
             {
                 return !(a == b);
             }
