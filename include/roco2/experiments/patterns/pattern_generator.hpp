@@ -36,10 +36,10 @@ namespace experiments
 
             pattern result;
 
+            // Fun fact: I've seen this pearl of overly clever code, but I couldn't change it.
+            //           Future me, have fun proving once again, this is correct ¯\_(ツ)_/¯
             std::size_t diff = reverse ? -1 : 1;
-
-            for (std::size_t nth = reverse ? num_blocks - 1 : 0; nth < num_blocks && nth >= 0;
-                 nth += diff)
+            for (std::size_t nth = reverse ? num_blocks - 1 : 0; nth < num_blocks; nth += diff)
             {
                 auto start = nth * block_size;
 
