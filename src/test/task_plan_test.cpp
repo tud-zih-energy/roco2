@@ -2,8 +2,6 @@
 #include <roco2/task/lambda_task.hpp>
 #include <roco2/task/task_plan.hpp>
 
-using log = roco2::log;
-
 int main()
 {
 
@@ -16,6 +14,7 @@ int main()
                 [&]() { roco2::chrono::busy_wait_for(std::chrono::seconds(1)); }));
 
 #pragma omp barrier
+        roco2::log::info() << plan.eta();
     }
 
     return 0;
