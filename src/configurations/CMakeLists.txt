@@ -1,4 +1,5 @@
-
 file(GLOB CFGS *)
 
-Roco2Configuration(example)
+FOREACH(CFG CFGS)
+    add_subdirectory(${CFG})
+ENDFOREACH()
