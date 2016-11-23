@@ -35,6 +35,7 @@ namespace metrics
         void write(std::uint64_t value)
         {
             SCOREP_USER_METRIC_UINT64(utility_metric, value)
+            (void)value;
         }
     };
 }

@@ -36,6 +36,7 @@ namespace metrics
         void write(double value)
         {
             SCOREP_USER_METRIC_DOUBLE(ddcm_metric, value)
+            (void)value;
         }
     };
 }
