@@ -91,7 +91,7 @@ namespace memory
             numa_set_membind(mask);
 
             numa_bitmask check;
-            numa_get_bitmask(check);
+            numa_get_membind(check);
 
             if (mask != check)
             {
