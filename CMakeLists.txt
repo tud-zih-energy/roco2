@@ -18,7 +18,9 @@ include(CTest)
 # Intialize git submodules if not done already
 file(GLOB SUBMODULE_FILES "lib/nitro/*")
 list(LENGTH SUBMODULE_FILES COUNT_NITRO)
-if(${COUNT_NITRO} EQUAL 0)
+file(GLOB SUBMODULE_FILES "lib/FIRESTARTER/*")
+list(LENGTH SUBMODULE_FILES FIRESTARTER_NITRO)
+if(${COUNT_NITRO} EQUAL 0 OR ${FIRESTARTER_NITRO} EQUAL 0)
     message(STATUS "Initializing git submodule")
     execute_process(COMMAND "git" "submodule" "init" WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
 endif()
@@ -90,6 +92,8 @@ if (X86Adapt_FOUND)
 else()
     message(STATUS "X86Adapt wasn't found, DDCM not available.")
 endif()
+
+include(cmake/BuildFirestarter.cmake)
 
 include_directories(include)
 
