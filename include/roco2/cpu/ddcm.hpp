@@ -31,7 +31,7 @@ namespace cpu
             static_assert(value, "x86_adapt is not available, thus ddcm() cannot be used.");
         };
 
-        const std::size_t dummy = sizeof(assert_dummy);
+        const std::size_t dummy = sizeof(assert_dummy<>);
 #endif
     public:
         ddcm()
