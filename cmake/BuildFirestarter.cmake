@@ -29,5 +29,5 @@ add_custom_command(
 
 add_custom_target(libfirestarter ALL DEPENDS ${CMAKE_BINARY_DIR}/firestarter/libfirestarter.a)
 
-set(FIRESTARTER_LIBRARIES ${CMAKE_BINARY_DIR}/firestarter/libfirestarter.a PARENT_SCOPE)
-set(FIRESTARTER_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/firestarter PARENT_SCOPE)
+set(FIRESTARTER_LIBRARIES ${CMAKE_BINARY_DIR}/firestarter/libfirestarter.a)
+set(FIRESTARTER_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/firestarter)
