@@ -1,4 +1,6 @@
+#ifndef SCOREP_USER_ENABLE
 #define SCOREP_USER_ENABLE
+#endif
 
 #include <roco2/scorep.hpp>
 
