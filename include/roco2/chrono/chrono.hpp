@@ -13,7 +13,7 @@ namespace chrono
     using time_point = std::chrono::high_resolution_clock::time_point;
     using duration = time_point::duration;
 
-    static time_point now()
+    inline time_point now()
     {
         return std::chrono::high_resolution_clock::now();
     }
