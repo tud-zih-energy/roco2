@@ -197,6 +197,9 @@ ELSE(NOT SCOREP_CONFIG)
                 list(APPEND SRC_FLAGS "-fPIC")
             endif()
 
+            # remove -pedantic, as it causes "style of line directive is a GCC extension" warnings
+            list(REMOVE_ITEM SRC_FLAGS "-pedantic")
+
             add_custom_command(
                 OUTPUT ${SRC_OUTPUT}
                 DEPENDS ${SRC} ${SRC_PLAIN_OUTPUT} ${SRC_FILTER_DEP}
