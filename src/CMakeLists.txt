@@ -1,6 +1,6 @@
 # add_subdirectory(firestarter)
 
-include_directories(firestarter)
+include_directories(${FIRESTARTER_INCLUDE_DIRS})
 
 add_library(fastcpufreq fastcpufreq.c)
 add_library(c_state_limit c_state_limit.c)

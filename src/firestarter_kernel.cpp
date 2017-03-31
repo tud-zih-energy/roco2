@@ -4,6 +4,8 @@
 
 #include <roco2/scorep.hpp>
 
+#include <cassert>
+
 extern "C" {
 #include <firestarter.h>
 }
