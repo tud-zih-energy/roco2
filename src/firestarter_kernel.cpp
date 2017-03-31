@@ -28,7 +28,7 @@ namespace kernels
         assert(firestarter_init_ != nullptr);
         assert(firestarter_function_ != nullptr);
 
-        auto mem_size = get_memory_size(base_function_);
+        auto mem_size = get_memory_size(base_function_, 2);
         (void)mem_size;
 
         auto& my_mem_buffer = roco2::thread_local_memory().firestarter_buffer;
