@@ -26,8 +26,8 @@ namespace kernels
     private:
         void run_kernel(roco2::chrono::time_point until) override;
 
-        int (*firestarter_function_)(param_type, param_type);
-        int (*firestarter_init_)(param_type);
+        int (*firestarter_function_)(void*);
+        int (*firestarter_init_)(void*);
         int base_function_;
 
         const static param_type loop_count = 10000;
