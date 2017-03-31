@@ -20,16 +20,16 @@ add_custom_command(
 add_custom_target(GenerateFirestarterSource ALL DEPENDS ${CMAKE_BINARY_DIR}/firestarter/Makefile)
 
 add_custom_command(
-    OUTPUT ${CMAKE_BINARY_DIR}/firestarter/libfirestarter.a
-    COMMAND make libfirestarter.a
+    OUTPUT ${CMAKE_BINARY_DIR}/firestarter/libfirestarter.so
+    COMMAND make libfirestarter.so
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/firestarter
-    COMMENT "Build libfirestarter.a"
+    COMMENT "Build libfirestarter.so"
     VERBATIM
 )
 
-add_custom_target(libfirestarter ALL DEPENDS ${CMAKE_BINARY_DIR}/firestarter/libfirestarter.a)
+add_custom_target(libfirestarter ALL DEPENDS ${CMAKE_BINARY_DIR}/firestarter/libfirestarter.so)
 
-set(FIRESTARTER_LIBRARIES ${CMAKE_BINARY_DIR}/firestarter/libfirestarter.a)
+set(FIRESTARTER_LIBRARIES ${CMAKE_BINARY_DIR}/firestarter/libfirestarter.so)
 set(FIRESTARTER_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/firestarter)
 
 set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_BINARY_DIR}/firestarter)
