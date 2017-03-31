@@ -131,6 +131,7 @@ ELSE(NOT SCOREP_CONFIG)
 
         get_target_property(TGT_LIBS ${tgt} "LINK_LIBRARIES")
         set(TGT_LINK_LIBS)
+        set(TGT_LINK_RPATH)
         set(TGT_LINK_DEPS)
         if(TGT_LIBS)
             foreach(LIB_TGT ${TGT_LIBS})
@@ -145,6 +146,10 @@ ELSE(NOT SCOREP_CONFIG)
                 get_filename_component(LIB_NAME ${LIB_PATH} NAME_WE)
                 get_filename_component(LIB_EXT ${LIB_PATH} EXT)
                 string(REPLACE "lib" "" LIB_SHORT_NAME ${LIB_NAME})
+
+                if(${LIB_EXT} STREQUAL ".so")
+                    list(APPEND TGT_LINK_RPATH "-Wl,-rpath,${LIB_DIR}")
+                endif()
 
                 if(TARGET "${LIB_SHORT_NAME}_scorep")
                     SET(LIB_INSTRUMENTED "${LIB_DIR}/${LIB_NAME}_scorep${LIB_EXT}")
@@ -228,7 +233,7 @@ ELSE(NOT SCOREP_CONFIG)
             message(STATUS "Add Score-P instrumentation for executable ${tgt}")
             add_custom_command(
                 OUTPUT ${tgt_output}
-                COMMAND ${SCOREP_EXECUTABLE} ${SCOREP_EXECUTABLE_FLAGS} ${CMAKE_CXX_COMPILER} ${TGT_FLAGS} ${TGT_LINK_FILES} -o ${tgt_output} ${TGT_LINK_LIBS} # > /dev/null 2>&1
+                COMMAND ${SCOREP_EXECUTABLE} ${SCOREP_EXECUTABLE_FLAGS} ${CMAKE_CXX_COMPILER} ${TGT_FLAGS} ${TGT_LINK_FILES} -o ${tgt_output} ${TGT_LINK_RPATH} ${TGT_LINK_LIBS} # > /dev/null 2>&1
                 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
                 DEPENDS ${TGT_LINK_FILES} ${tgt} ${TGT_LINK_DEPS}
                 COMMENT "Linking Score-P instrumentated executable: ${tgt}_scorep"
