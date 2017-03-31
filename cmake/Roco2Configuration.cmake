@@ -9,7 +9,6 @@ macro(Roco2Configuration CONF )
         ${MKL_LIBRARIES}
         fastcpufreq
         ${CPUFREQ_LIBRARIES}
-        ${FIRESTARTER_LIBRARIES}
         roco2_core
     )
 
