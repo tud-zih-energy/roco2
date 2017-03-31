@@ -33,7 +33,7 @@ namespace kernels
 
         auto& my_mem_buffer = roco2::thread_local_memory().firestarter_buffer;
 
-        assert(mem_size <= roco2::thread_local_memory::firestarter_size * sizeof(my_mem_buffer[0]));
+        assert(mem_size / sizeof(double) <= my_mem_buffer.size());
 
         threaddata_t data;
 
