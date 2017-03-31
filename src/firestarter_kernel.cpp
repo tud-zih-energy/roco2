@@ -21,13 +21,14 @@ namespace kernels
 
         assert(base_function_ != FUNC_UNKNOWN);
 
-        firestarter_init_ = get_init_function(base_function_, 2);
-        firestarter_function_ = get_working_function(base_function_, 2);
+        firestarter_init_ = reinterprete_cast<int (*)(void*)>(get_init_function(base_function_, 2));
+        firestarter_function_ =
+            reinterprete_cast<int (*)(void*)>(get_working_function(base_function_, 2));
 
         assert(firestarter_init_ != nullptr);
         assert(firestarter_function_ != nullptr);
 
-        auto mem_size = get_memory_size(base_function_t base_function);
+        auto mem_size = get_memory_size(base_function_);
 
         auto& my_mem_buffer = roco2::thread_local_memory().firestarter_buffer;
 
