@@ -21,9 +21,9 @@ namespace kernels
 
         assert(base_function_ != FUNC_UNKNOWN);
 
-        firestarter_init_ = reinterprete_cast<int (*)(void*)>(get_init_function(base_function_, 2));
+        firestarter_init_ = reinterpret_cast<int (*)(void*)>(get_init_function(base_function_, 2));
         firestarter_function_ =
-            reinterprete_cast<int (*)(void*)>(get_working_function(base_function_, 2));
+            reinterpret_cast<int (*)(void*)>(get_working_function(base_function_, 2));
 
         assert(firestarter_init_ != nullptr);
         assert(firestarter_function_ != nullptr);
