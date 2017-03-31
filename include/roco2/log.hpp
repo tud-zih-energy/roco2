@@ -1,8 +1,6 @@
 #ifndef INCLUDE_ROCO2_LOG_HPP
 #define INCLUDE_ROCO2_LOG_HPP
 
-#define NITRO_LOG_MIN_SEVERITY debug
-
 #include <nitro/log/log.hpp>
 
 #include <nitro/log/attribute/message.hpp>
