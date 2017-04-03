@@ -39,7 +39,9 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
     roco2::kernels::busy_wait bw;
     roco2::kernels::compute cp;
     roco2::kernels::sinus sinus;
-    roco2::kernels::memory mem;
+    roco2::kernels::memory_read mem_rd;
+    roco2::kernels::memory_copy mem_cpy;
+    roco2::kernels::memory_write mem_wrt;
     roco2::kernels::sqrt squareroot;
     roco2::kernels::matmul mm;
     roco2::kernels::firestarter fs;
@@ -57,6 +59,8 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
     auto experiment_duration = std::chrono::seconds(10);
 
     auto freq_list = std::vector<unsigned>{ 2601, 1400 };
+
+    auto ddcm_list = std::vector<unsigned>{ 1, 5, 10, 15, 16 };
 
     auto on_list = sub_block_pattern(4, 12) >> block_pattern(4, false, triangle_shape::upper) >>
                    stride_pattern(4, 12);
@@ -98,15 +102,16 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
 
         for (const auto& on : on_list)
         {
-
-            for (auto cycles : { 1, 5, 10, 15, 16 })
+            for (const auto& cycles : ddcm_list)
             {
                 setting([&ddcm, cycles]() { ddcm.change(cycles); });
 
                 experiment(bw, on);
                 experiment(cp, on);
                 experiment(sinus, on);
-                experiment(mem, on);
+                experiment(mem_rd, on);
+                experiment(mem_cpy, on);
+                experiment(mem_wrt, on);
                 experiment(addpd, on);
                 experiment(mulpd, on);
                 experiment(squareroot, on);
