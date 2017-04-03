@@ -123,17 +123,15 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
         }
     }
 
-    // ------ EDIT TASK PLAN ABOVE THIS LINE ------
+// ------ EDIT TASK PLAN ABOVE THIS LINE ------
 
-    if (eta_only)
-    {
 #pragma omp master
-        {
-            roco2::log::info() << "ETA for whole execution: "
-                               << std::chrono::duration_cast<std::chrono::seconds>(plan.eta());
-        }
+    {
+        roco2::log::info() << "ETA for whole execution: "
+                           << std::chrono::duration_cast<std::chrono::seconds>(plan.eta());
     }
-    else
+
+    if (!eta_only)
     {
 #pragma omp barrier
 
