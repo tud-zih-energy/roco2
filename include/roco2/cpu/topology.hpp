@@ -243,8 +243,6 @@ namespace cpu
 
         const static std::string base_path;
     };
-
-    const std::string topology::base_path = "/sys/devices/system/cpu";
 }
 }
 
