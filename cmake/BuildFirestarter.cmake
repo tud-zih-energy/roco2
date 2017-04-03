@@ -22,6 +22,7 @@ add_custom_target(GenerateFirestarterSource ALL DEPENDS ${CMAKE_BINARY_DIR}/fire
 add_custom_command(
     OUTPUT ${CMAKE_BINARY_DIR}/firestarter/libfirestarter.so
     COMMAND make libfirestarter.so
+    DEPENDS ${CMAKE_BINARY_DIR}/firestarter/Makefile
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/firestarter
     COMMENT "Build libfirestarter.so"
     VERBATIM
