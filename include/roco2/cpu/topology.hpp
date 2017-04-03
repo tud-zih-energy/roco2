@@ -1,6 +1,7 @@
 #ifndef INCLUDE_ROCO2_CPU_TOPOLOGY_HPP
 #define INCLUDE_ROCO2_CPU_TOPOLOGY_HPP
 
+#include <roco2/exception.hpp>
 #include <roco2/log.hpp>
 
 #include <omp.h>
