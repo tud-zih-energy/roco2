@@ -41,9 +41,9 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
     roco2::kernels::busy_wait bw;
     roco2::kernels::compute cp;
     roco2::kernels::sinus sinus;
-    roco2::kernels::memory_read mem_rd;
-    roco2::kernels::memory_copy mem_cpy;
-    roco2::kernels::memory_write mem_wrt;
+    roco2::kernels::memory_read<> mem_rd;
+    roco2::kernels::memory_copy<> mem_cpy;
+    roco2::kernels::memory_write<> mem_wrt;
     roco2::kernels::sqrt squareroot;
     roco2::kernels::matmul mm;
     roco2::kernels::firestarter fs;
