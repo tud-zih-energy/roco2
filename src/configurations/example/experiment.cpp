@@ -20,7 +20,9 @@
 #include <roco2/kernels/high_low.hpp>
 #include <roco2/kernels/idle.hpp>
 #include <roco2/kernels/matmul.hpp>
-#include <roco2/kernels/memory.hpp>
+#include <roco2/kernels/memory_copy.hpp>
+#include <roco2/kernels/memory_read.hpp>
+#include <roco2/kernels/memory_write.hpp>
 #include <roco2/kernels/mulpd.hpp>
 #include <roco2/kernels/sinus.hpp>
 #include <roco2/kernels/sqrt.hpp>
