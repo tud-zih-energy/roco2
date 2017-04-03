@@ -11,6 +11,7 @@ macro(Roco2Configuration CONF )
         ${FIRESTARTER_LIBRARIES}
         ${CPUFREQ_LIBRARIES}
         roco2_core
+        roco2_main
     )
 
     if(X86Adapt_FOUND)

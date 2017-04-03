@@ -7,6 +7,9 @@ add_library(roco2_core STATIC asm_kernels.c metrics.cpp firestarter_kernel.cpp c
 target_link_libraries(roco2_core ${FIRESTARTER_LIBRARIES})
 add_scorep_instrumentation(roco2_core)
 
+add_library(roco2_main STATIC main.cpp)
+add_scorep_instrumentation(roco2_main)
+
 add_subdirectory(configurations)
 
 add_subdirectory(test)
