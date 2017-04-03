@@ -17,7 +17,7 @@ namespace kernels
     public:
         virtual experiment_tag tag() const override
         {
-            return 8;
+            return 13;
         }
 
     private:
