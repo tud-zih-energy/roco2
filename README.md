@@ -4,7 +4,7 @@ A synthetic workload generator written in C++ with integrated [Score-P](http://w
 ## Getting started
 
 The folder ```src/configurations/example``` contains one example configuration.
-You can build this example, however it will require small adjustments to fit your machine. (See [Build](#user-content-building-with-cmake]))
+You can build this example, however it will require small adjustments to fit your machine. (See [Build](#user-content-building-with-cmake))
 
 The file ```src/configurations/example/experiment.cpp``` contains all configuration,
 which is necessary to adapt to your machine. For simple adjustments, you can edit the section ```EDIT GENERIC SETTINGS```. This section comprises the variables representing the duration of one experiment, a list of all tested frequencies and T-states, and the patterns of the active hardware threads. These four knobs determine the length of one execution.
