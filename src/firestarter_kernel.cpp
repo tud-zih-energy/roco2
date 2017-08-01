@@ -1,4 +1,3 @@
-#include <roco2/kernels/firestarter.hpp>
 #include <roco2/memory/thread_local.hpp>
 #include <roco2/metrics/utility.hpp>
 
@@ -14,21 +13,37 @@ namespace roco2
 {
 namespace kernels
 {
+    using firestarter_function = int (*)(void*);
 
-    firestarter::firestarter()
+    void* firestartet_data(unsigned long long loop_count,
+                           std::vector<double, AlignmentAllocator<double, 32>>& my_mem_buffer)
     {
-        base_function_ = select_base_function();
+        threaddata_t* data = (threaddata_t*)malloc(sizeof(threaddata_t));
+        data->addrMem = reinterpret_cast<unsigned long long>(my_mem_buffer.data());
+        data->addrHigh = loop_count;
+        return (void*)data;
+    }
 
-        assert(base_function_ != FUNC_UNKNOWN);
+    void* free_firestartet_data(void* data)
+    {
+        free(data);
+    }
 
-        firestarter_init_ = reinterpret_cast<int (*)(void*)>(get_init_function(base_function_, 2));
-        firestarter_function_ =
-            reinterpret_cast<int (*)(void*)>(get_working_function(base_function_, 2));
+    firestarter_function init_firestarter_kernel()
+    {
+        int base_function = select_base_function();
 
-        assert(firestarter_init_ != nullptr);
-        assert(firestarter_function_ != nullptr);
+        assert(base_function != FUNC_UNKNOWN);
 
-        auto mem_size = get_memory_size(base_function_, 2);
+        firestarter_function firestarter_init =
+            reinterpret_cast<int (*)(void*)>(get_init_function(base_function, 2));
+        firestarter_function firestarter_kernel =
+            reinterpret_cast<int (*)(void*)>(get_working_function(base_function, 2));
+
+        assert(firestarter_init != nullptr);
+        assert(firestarter_kernel != nullptr);
+
+        auto mem_size = get_memory_size(base_function, 2);
         (void)mem_size;
 
         auto& my_mem_buffer = roco2::thread_local_memory().firestarter_buffer;
@@ -37,37 +52,11 @@ namespace kernels
 
         threaddata_t data;
 
-        data.addrMem = reinterpret_cast<param_type>(my_mem_buffer.data());
+        data.addrMem = reinterpret_cast<unsigned long long>(my_mem_buffer.data());
 
-        firestarter_init_(&data);
-    }
+        firestarter_init(&data);
 
-    void firestarter::run_kernel(roco2::chrono::time_point until)
-    {
-        SCOREP_USER_REGION("firestarter_kernel", SCOREP_USER_REGION_TYPE_FUNCTION)
-
-        assert(firestarter_function_);
-
-        auto& my_mem_buffer = roco2::thread_local_memory().firestarter_buffer;
-
-        // check alignment requirements
-        assert(reinterpret_cast<param_type>(my_mem_buffer.data()) % 32 == 0);
-
-        threaddata_t data;
-        data.addrMem = reinterpret_cast<param_type>(my_mem_buffer.data());
-        data.addrHigh = loop_count;
-
-        std::size_t loops = 0;
-
-        do
-        {
-            // SCOREP_USER_REGION("firestarter_kernel_loop", SCOREP_USER_REGION_TYPE_FUNCTION)
-            firestarter_function_(&data);
-
-            loops++;
-        } while (std::chrono::high_resolution_clock::now() < until);
-
-        roco2::metrics::utility::instance().write(loops);
+        return firestarter_kernel;
     }
 }
 }

@@ -19,20 +19,22 @@ namespace roco2
 {
 namespace kernels
 {
-
+    template <typename return_functor>
     class base_kernel
     {
     public:
         using experiment_tag = std::size_t;
 
-        void run(roco2::chrono::time_point until, roco2::experiments::cpu_sets::cpu_set on)
+        void run(return_functor& cond, roco2::experiments::cpu_sets::cpu_set on)
         {
             if (std::find(on.begin(), on.end(), roco2::cpu::info::current_thread()) != on.end())
             {
                 roco2::metrics::metric_guard<roco2::metrics::experiment> guard(this->tag());
                 roco2::metrics::threads::instance().write(on.num_threads());
 
-                this->run_kernel(until);
+                this->run_kernel(cond);
+
+                cond.sync_working();
             }
             else
             {
@@ -41,7 +43,7 @@ namespace kernels
 
                 SCOREP_USER_REGION("idle_sleep", SCOREP_USER_REGION_TYPE_FUNCTION)
 
-                std::this_thread::sleep_until(until);
+                cond.sync_idle();
 
                 roco2::metrics::utility::instance().write(1);
             }
@@ -50,7 +52,7 @@ namespace kernels
         virtual experiment_tag tag() const = 0;
 
     private:
-        virtual void run_kernel(roco2::chrono::time_point until) = 0;
+        virtual void run_kernel(return_functor& cond) = 0;
 
     public:
         virtual ~base_kernel()

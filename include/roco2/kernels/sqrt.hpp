@@ -11,15 +11,16 @@ namespace roco2
 {
 namespace kernels
 {
-    class sqrt : public base_kernel
+    template <typename return_functor>
+    class sqrt : public base_kernel<return_functor>
     {
     private:
-        virtual experiment_tag tag() const override
+        virtual typename base_kernel<return_functor>::experiment_tag tag() const override
         {
             return 11;
         }
 
-        virtual void run_kernel(chrono::time_point until) override
+        virtual void run_kernel(return_functor& cond) override
         {
             SCOREP_USER_REGION("sqrt_kernel", SCOREP_USER_REGION_TYPE_FUNCTION)
 
@@ -48,7 +49,7 @@ namespace kernels
                 }
 
                 loops++;
-            } while (std::chrono::high_resolution_clock::now() < until);
+            } while (cond());
 
             roco2::metrics::utility::instance().write(loops);
         }

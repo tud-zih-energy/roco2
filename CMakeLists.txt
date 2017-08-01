@@ -46,7 +46,12 @@ find_package(OpenMP REQUIRED)
 if (OPENMP_FOUND)
     set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    message("OpenMPCXX: ${OpenMP_CXX_FLAGS} , C ${OpenMP_C_FLAGS}")
+else()
+    message(FATAL_ERROR "OpenMP wasn't found but is required.")
 endif()
+
+
 
 option(USE_MKL "Whether to use MKL or LAPACK for matmul kernel" ON)
 if(USE_MKL)

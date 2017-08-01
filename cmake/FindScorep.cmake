@@ -147,7 +147,7 @@ ELSE(NOT SCOREP_CONFIG)
                 get_filename_component(LIB_EXT ${LIB_PATH} EXT)
                 string(REPLACE "lib" "" LIB_SHORT_NAME ${LIB_NAME})
 
-                if(${LIB_EXT} STREQUAL ".so")
+                if("${LIB_EXT}" STREQUAL ".so")
                     list(APPEND TGT_LINK_RPATH "-Wl,-rpath,${LIB_DIR}")
                 endif()
 

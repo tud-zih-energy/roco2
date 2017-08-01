@@ -10,7 +10,8 @@ namespace roco2
 {
 namespace kernels
 {
-    class high_low_bs : public base_kernel
+    template <typename return_functor>
+    class high_low_bs : public base_kernel<return_functor>
     {
     public:
         template <class DT_HIGH, class DT_LOW>
@@ -20,34 +21,24 @@ namespace kernels
         {
         }
 
-        virtual experiment_tag tag() const override
+        virtual typename base_kernel<return_functor>::experiment_tag tag() const override
         {
             return 12;
         }
 
     private:
-        void run_kernel(roco2::chrono::time_point tp) override
+        void run_kernel(return_functor& cond()) override
         {
             SCOREP_USER_REGION("high_low_bs_kernel", SCOREP_USER_REGION_TYPE_FUNCTION)
             roco2::chrono::time_point deadline = std::chrono::high_resolution_clock::now();
 
             std::size_t loops = 0;
 
-            while (true)
+            while (cond())
             {
                 deadline += high_time_;
-                if (deadline >= tp)
-                {
-                    roco2::chrono::busy_wait_until(tp);
-                    break;
-                }
                 roco2::chrono::busy_wait_until(deadline);
                 deadline += low_time_;
-                if (deadline >= tp)
-                {
-                    std::this_thread::sleep_until(tp);
-                    break;
-                }
                 std::this_thread::sleep_until(deadline);
 
                 loops++;

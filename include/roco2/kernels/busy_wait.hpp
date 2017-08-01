@@ -10,23 +10,23 @@ namespace roco2
 {
 namespace kernels
 {
-
-    class busy_wait : public base_kernel
+    template <typename return_functor>
+    class busy_wait : public base_kernel<return_functor>
     {
     public:
-        virtual experiment_tag tag() const override
+        virtual typename base_kernel<return_functor>::experiment_tag tag() const override
         {
             return 4;
         }
 
     private:
-        void run_kernel(roco2::chrono::time_point tp) override
+        void run_kernel(return_functor& cond) override
         {
             SCOREP_USER_REGION("busy_wait_kernel", SCOREP_USER_REGION_TYPE_FUNCTION)
 
             std::size_t loops = 0;
             // roco2::chrono::busy_wait_until(tp);
-            while (std::chrono::high_resolution_clock::now() < tp)
+            while (cond())
             {
                 loops++;
             }

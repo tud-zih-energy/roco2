@@ -10,23 +10,34 @@ namespace roco2
 {
 namespace kernels
 {
-
-    class idle : public base_kernel
+    template <typename return_functor>
+    class idle : public base_kernel<return_functor>
     {
     public:
-        virtual experiment_tag tag() const override
+        idle(roco2::chrono::duration iteration_duration)
+        : base_kernel<return_functor>(), iteration_duration(iteration_duration)
+        {
+        }
+
+        virtual typename base_kernel<return_functor>::experiment_tag tag() const override
         {
             return 2;
         }
 
     private:
-        void run_kernel(roco2::chrono::time_point tp) override
+        void run_kernel(return_functor& cond) override
         {
             SCOREP_USER_REGION("idle_sleep", SCOREP_USER_REGION_TYPE_FUNCTION)
-
-            std::this_thread::sleep_until(tp);
-            roco2::metrics::utility::instance().write(1);
+            int iteration = 0;
+            while (cond())
+            {
+                std::this_thread::sleep_until(roco2::chrono::now() + iteration_duration);
+                iteration++;
+            }
+            roco2::metrics::utility::instance().write(iteration);
         }
+
+        roco2::chrono::duration iteration_duration;
     };
 }
 }

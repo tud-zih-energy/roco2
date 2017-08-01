@@ -5,32 +5,68 @@
 
 #include <roco2/chrono/util.hpp>
 
+#include <memory>
+
 namespace roco2
 {
 namespace kernels
 {
+    using firestarter_function = int (*)(void*);
 
-    class firestarter : public base_kernel
+    firestarter_function init_firestarter_kernel();
+
+    void* firestartet_data(unsigned long long loop_count,
+                           std::vector<double, AlignmentAllocator<double, 32>>& my_mem_buffer);
+
+    void* free_firestartet_data(void* data);
+
+    template <typename return_functor>
+    class firestarter : public base_kernel<return_functor>
     {
 
-        using param_type = unsigned long long;
-
     public:
-        firestarter();
+        firestarter() : firestarter_function_(init_firestarter_kernel())
+        {
+        }
 
-        virtual experiment_tag tag() const override
+        virtual typename base_kernel<return_functor>::experiment_tag tag() const override
         {
             return 6;
         }
 
     private:
-        void run_kernel(roco2::chrono::time_point until) override;
+        void run_kernel(return_functor& cond) override
+        {
+            SCOREP_USER_REGION("firestarter_kernel", SCOREP_USER_REGION_TYPE_FUNCTION)
 
-        int (*firestarter_function_)(void*);
-        int (*firestarter_init_)(void*);
-        int base_function_;
+            assert(firestarter_function_);
 
-        const static param_type loop_count = 10000;
+            auto& my_mem_buffer = roco2::thread_local_memory().firestarter_buffer;
+
+            // check alignment requirements
+            assert(reinterpret_cast<unsigned long long>(my_mem_buffer.data()) % 32 == 0);
+
+            auto data = firestartet_data(loop_count, my_mem_buffer);
+
+            std::size_t loops = 0;
+
+            do
+            {
+                // SCOREP_USER_REGION("firestarter_kernel_loop",
+                // SCOREP_USER_REGION_TYPE_FUNCTION)
+                firestarter_function_(data);
+
+                loops++;
+            } while (cond());
+
+            roco2::metrics::utility::instance().write(loops);
+
+            free_firestartet_data(data);
+        }
+
+        firestarter_function firestarter_function_;
+
+        const static unsigned long long loop_count = 10000;
     };
 }
 }

@@ -23,14 +23,15 @@ namespace roco2
 {
 namespace kernels
 {
-    class matmul : public base_kernel
+    template <typename return_functor>
+    class matmul : public base_kernel<return_functor>
     {
-        virtual experiment_tag tag() const override
+        virtual typename base_kernel<return_functor>::experiment_tag tag() const override
         {
             return 7;
         }
 
-        virtual void run_kernel(chrono::time_point until) override
+        virtual void run_kernel(return_functor& cond) override
         {
             SCOREP_USER_REGION("matmul_kernel", SCOREP_USER_REGION_TYPE_FUNCTION)
 
@@ -55,7 +56,7 @@ namespace kernels
 #endif
 
                 loops++;
-            } while (std::chrono::high_resolution_clock::now() < until);
+            } while (cond());
 
             roco2::metrics::utility::instance().write(loops);
         }

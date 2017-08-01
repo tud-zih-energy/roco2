@@ -12,7 +12,7 @@ namespace roco2
 
 namespace experiments
 {
-
+    template <typename return_functor>
     class base
     {
     public:
@@ -23,18 +23,16 @@ namespace experiments
         {
         }
 
-        virtual void run(roco2::kernels::base_kernel& kernel,
+        virtual void run(roco2::kernels::base_kernel<return_functor>& kernel,
                          roco2::experiments::cpu_sets::cpu_set on) = 0;
 
         virtual roco2::chrono::duration eta() const = 0;
 
     protected:
-        void run_for(roco2::kernels::base_kernel& kernel, roco2::experiments::cpu_sets::cpu_set on,
-                     duration length)
+        void run_for(roco2::kernels::base_kernel<return_functor>& kernel,
+                     roco2::experiments::cpu_sets::cpu_set on, return_functor& cond)
         {
-            starting_point += length;
-
-            kernel.run(starting_point, on);
+            kernel.run(cond, on);
         }
 
     private:
