@@ -12,7 +12,7 @@ macro(Roco2Configuration CONF )
         ${CPUFREQ_LIBRARIES}
         roco2_core
         roco2_main
-        ${OpenMP_LIBRARIES}
+        ${OpenMP_CXX_FLAGS}
     )
 
     if(X86Adapt_FOUND)
