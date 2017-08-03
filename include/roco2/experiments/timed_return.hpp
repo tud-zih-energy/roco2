@@ -8,6 +8,7 @@
 #ifndef INCLUDE_ROCO2_EXPERIMENTS_TIMED_RETURN_HPP_
 #define INCLUDE_ROCO2_EXPERIMENTS_TIMED_RETURN_HPP_
 
+#include <roco2/chrono/chrono.hpp>
 #include <roco2/experiments/base_return.hpp>
 
 #include <thread>

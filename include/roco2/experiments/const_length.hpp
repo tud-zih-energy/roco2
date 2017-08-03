@@ -2,21 +2,20 @@
 #define INCLUDE_ROCO2_EXPERIMENTS_CONST_LENGTH_HPP
 
 #include <roco2/experiments/base.hpp>
-#include <roco2/experiments/timed_return.hpp>
 
 namespace roco2
 {
 
 namespace experiments
 {
-    class const_lenght : public base<timed_return>
+    template <typename return_functor>
+    class const_lenght : public base<return_functor>
     {
     public:
-        using base<timed_return>::time_point;
-        using base<timed_return>::duration;
+        using typename base<return_functor>::time_point;
 
-        const_lenght(time_point starting_point, duration d)
-        : base<timed_return>(starting_point), cond(d)
+        const_lenght(time_point starting_point, return_functor& cond)
+        : base<return_functor>(starting_point), cond(cond)
         {
         }
 
@@ -25,7 +24,7 @@ namespace experiments
             return cond.eta();
         }
 
-        virtual void run(roco2::kernels::base_kernel<timed_return>& kernel,
+        virtual void run(roco2::kernels::base_kernel<return_functor>& kernel,
                          roco2::experiments::cpu_sets::cpu_set on) override
         {
             this->run_for(kernel, on, cond);
@@ -33,7 +32,7 @@ namespace experiments
         }
 
     private:
-        timed_return cond;
+        return_functor cond;
     };
 }
 }

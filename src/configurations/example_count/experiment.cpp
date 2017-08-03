@@ -31,27 +31,30 @@
 #include <roco2/task/lambda_task.hpp>
 #include <roco2/task/task_plan.hpp>
 
+#include <roco2/experiments/count_return.hpp>
+#include <roco2/experiments/timed_return.hpp>
+
 #include <chrono>
 #include <string>
 #include <vector>
 
 using namespace roco2::experiments::patterns;
-using roco2::experiments::timed_return;
+using roco2::experiments::count_return;
 
 void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
 {
-    roco2::kernels::busy_wait<timed_return> bw;
-    roco2::kernels::compute<timed_return> cp;
-    roco2::kernels::sinus<timed_return> sinus;
-    roco2::kernels::memory_read<timed_return> mem_rd;
-    roco2::kernels::memory_copy<timed_return> mem_cpy;
-    roco2::kernels::memory_write<timed_return> mem_wrt;
-    roco2::kernels::sqrt<timed_return> squareroot;
-    roco2::kernels::matmul<timed_return> mm;
-    roco2::kernels::firestarter<timed_return> fs;
-    roco2::kernels::idle<timed_return> idle(std::chrono::milliseconds(10));
-    roco2::kernels::mulpd<timed_return> mulpd;
-    roco2::kernels::addpd<timed_return> addpd;
+    roco2::kernels::busy_wait<count_return> bw;
+    roco2::kernels::compute<count_return> cp;
+    roco2::kernels::sinus<count_return> sinus;
+    roco2::kernels::memory_read<count_return> mem_rd;
+    roco2::kernels::memory_copy<count_return> mem_cpy;
+    roco2::kernels::memory_write<count_return> mem_wrt;
+    roco2::kernels::addpd<count_return> addpd;
+    roco2::kernels::mulpd<count_return> mulpd;
+    roco2::kernels::sqrt<count_return> squareroot;
+    roco2::kernels::matmul<count_return> mm;
+    roco2::kernels::firestarter<count_return> fs;
+    roco2::kernels::idle<count_return> idle(std::chrono::milliseconds(10));
 
     //    roco2::cpu::frequency freqctl;
     //    roco2::cpu::ddcm ddcm;
@@ -83,13 +86,41 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
     auto experiment_startpoint =
         roco2::initialize::thread(starting_point, experiment_duration, eta_only);
 
-    roco2::experiments::const_lenght exp(experiment_startpoint, experiment_duration);
+    auto exp = [experiment_startpoint](auto& cr) {
+        return roco2::experiments::const_lenght<count_return>(experiment_startpoint, cr);
+    };
+
+    roco2::experiments::count_return cr_bw(353154284000);
+    roco2::experiments::count_return cr_cp(103861);
+    roco2::experiments::count_return cr_sinus(1131);
+    roco2::experiments::count_return cr_mem_rd(632);
+    roco2::experiments::count_return cr_mem_cpy(307);
+    roco2::experiments::count_return cr_mem_wrt(329);
+    roco2::experiments::count_return cr_addpd(4009);
+    roco2::experiments::count_return cr_mulpd(7954);
+    roco2::experiments::count_return cr_squareroot(2.251);
+    roco2::experiments::count_return cr_fs(1605);
+    roco2::experiments::count_return cr_mm(47);
+    roco2::experiments::count_return cr_idle(1000);
+
+    auto exp_bw = exp(cr_bw);
+    auto exp_cp = exp(cr_cp);
+    auto exp_sinus = exp(cr_sinus);
+    auto exp_mem_rd = exp(cr_mem_rd);
+    auto exp_mem_cpy = exp(cr_mem_cpy);
+    auto exp_mem_wrt = exp(cr_mem_wrt);
+    auto exp_addpd = exp(cr_addpd);
+    auto exp_mulpd = exp(cr_mulpd);
+    auto exp_squareroot = exp(cr_squareroot);
+    auto exp_fs = exp(cr_fs);
+    auto exp_mm = exp(cr_mm);
+    auto exp_idle = exp(cr_idle);
 
     // make sure ddcm is disabled
     //    ddcm.disable();
 
-    auto experiment = [&](auto& kernel, const auto& on) {
-        plan.push_back(roco2::task::experiment_task<timed_return>(exp, kernel, on));
+    auto experiment = [&](auto& exp, auto& kernel, const auto& on) {
+        plan.push_back(roco2::task::experiment_task<count_return>(exp, kernel, on));
     };
 
     auto setting = [&](auto lambda) { plan.push_back(roco2::task::make_lambda_task(lambda)); };
@@ -109,18 +140,18 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
         //        for (const auto& cycles : ddcm_list)
         //        {
         //            setting([&ddcm, cycles]() { ddcm.change(cycles); });
-
-        experiment(bw, on);
-        experiment(cp, on);
-        experiment(sinus, on);
-        experiment(mem_rd, on);
-        experiment(mem_cpy, on);
-        experiment(mem_wrt, on);
-        experiment(addpd, on);
-        experiment(mulpd, on);
-        experiment(squareroot, on);
-        experiment(mm, on);
-        experiment(fs, on);
+        experiment(exp_bw, bw, on);
+        experiment(exp_cp, cp, on);
+        experiment(exp_sinus, sinus, on);
+        experiment(exp_mem_rd, mem_rd, on);
+        experiment(exp_mem_cpy, mem_cpy, on);
+        experiment(exp_mem_wrt, mem_wrt, on);
+        experiment(exp_addpd, addpd, on);
+        experiment(exp_mulpd, mulpd, on);
+        experiment(exp_squareroot, squareroot, on);
+        experiment(exp_mm, mm, on);
+        experiment(exp_fs, fs, on);
+        experiment(exp_idle, idle, on);
         //        }
     }
 //    }

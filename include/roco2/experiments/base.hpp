@@ -17,7 +17,6 @@ namespace experiments
     {
     public:
         using time_point = std::chrono::high_resolution_clock::time_point;
-        using duration = time_point::duration;
 
         base(time_point starting_point) : starting_point(starting_point)
         {
