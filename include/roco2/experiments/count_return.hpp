@@ -38,7 +38,7 @@ namespace experiments
             {
                 working_threads = roco2::cpu::topology::instance().num_cores();
             }
-            log::info() << "there are " << working_threads << " ";
+            log::debug() << "there are " << working_threads << " ";
         }
 
         roco2::chrono::duration eta() const override
@@ -50,34 +50,34 @@ namespace experiments
         {
             std::unique_lock<std::mutex> lk(cv_m);
             working_threads--;
-            log::info() << "working: there are sill " << working_threads << " threads waiting";
+            log::debug() << "working: there are sill " << working_threads << " threads waiting";
             if (working_threads > 0)
             {
                 cv.wait(lk, [] { return working_threads == 0; });
             }
             else
             {
-                log::info() << "working notify";
+                log::debug() << "working notify";
                 cv.notify_all();
             }
-            log::info() << "working: proceed";
+            log::debug() << "working: proceed";
         }
 
         void sync_idle() override
         {
             std::unique_lock<std::mutex> lk(cv_m);
             working_threads--;
-            log::info() << "idle: there are sill " << working_threads << " threads waiting";
+            log::debug() << "idle: there are sill " << working_threads << " threads waiting";
             if (working_threads > 0)
             {
                 cv.wait(lk, [] { return working_threads == 0; });
             }
             else
             {
-                log::info() << "idle notify";
+                log::debug() << "idle notify";
                 cv.notify_all();
             }
-            log::info() << "idle: proceed";
+            log::debug() << "idle: proceed";
         }
 
         void next() override
@@ -89,7 +89,7 @@ namespace experiments
 
             if (waiting_threads == roco2::cpu::topology::instance().num_cores())
             {
-                log::info() << "set working threads";
+                log::debug() << "set working threads";
                 working_threads = roco2::cpu::topology::instance().num_cores();
                 waiting_threads = 0;
                 cv.notify_all();
