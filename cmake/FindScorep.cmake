@@ -84,6 +84,7 @@ ELSE(NOT SCOREP_CONFIG)
 
     option(SCOREP_INSTRUMENTATION_COMPILER "Enable Score-P compiler instrumentation" OFF)
     option(SCOREP_INSTRUMENTATION_USER "Enable Score-P user instrumentation" ON)
+    option(SCOREP_ONLINE_ACCESS "Enables Score-P online acces to be used with PTF" ON)
     option(SCOREP_STATIC "Enable Score-P static instrumentation (otherwise use shared)" ON)
     option(SCOREP_INSTRUMENTATION_MPI "Forcibly enables MPI instrumentation" OFF)
 
@@ -112,6 +113,13 @@ ELSE(NOT SCOREP_CONFIG)
     else()
         list(APPEND SCOREP_EXECUTABLE_FLAGS "--nouser")
     endif()
+
+    if(SCOREP_ONLINE_ACCESS)
+        list(APPEND SCOREP_EXECUTABLE_FLAGS "--online-access")
+    else()
+        list(APPEND SCOREP_EXECUTABLE_FLAGS "--noonline-access")
+    endif()
+            
 
     if(EXISTS ${SCOREP_INSTRUMENTATION_FILTER})
         set(SRC_FILTER_DEP ${SCOREP_INSTRUMENTATION_FILTER})
@@ -296,3 +304,10 @@ if(SCOREP_INSTRUMENTATION_USER)
 else()
     message(STATUS "    Using user     instrumentation: NO")
 endif()
+
+if(SCOREP_ONLINE_ACCESS)
+    message(STATUS "    Using online   access: YES")
+else()
+    message(STATUS "    Using online   access: NO")
+endif()
+
