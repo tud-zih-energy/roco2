@@ -155,6 +155,9 @@ ELSE(NOT SCOREP_CONFIG)
                 get_filename_component(LIB_EXT ${LIB_PATH} EXT)
                 string(REPLACE "lib" "" LIB_SHORT_NAME ${LIB_NAME})
 
+message("${LIB_PATH}")
+
+                    list(APPEND TGT_LINK_RPATH "-Wl,-rpath,/sw/global/compilers/gcc/7.1.0/lib64")
                 if("${LIB_EXT}" STREQUAL ".so")
                     list(APPEND TGT_LINK_RPATH "-Wl,-rpath,${LIB_DIR}")
                 endif()
@@ -239,6 +242,7 @@ ELSE(NOT SCOREP_CONFIG)
 
         if(${tgt_type} STREQUAL "EXECUTABLE")
             message(STATUS "Add Score-P instrumentation for executable ${tgt}")
+message("${TGT_FLAGS} £$% ${TGT_LINK_FILES} £$% ${TGT_LINK_RPATH}")
             add_custom_command(
                 OUTPUT ${tgt_output}
                 COMMAND ${SCOREP_EXECUTABLE} ${SCOREP_EXECUTABLE_FLAGS} ${CMAKE_CXX_COMPILER} ${TGT_FLAGS} ${TGT_LINK_FILES} -o ${tgt_output} ${TGT_LINK_RPATH} ${TGT_LINK_LIBS} # > /dev/null 2>&1

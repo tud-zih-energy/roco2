@@ -36,7 +36,13 @@ public:
     }
     
     inline pointer allocate (size_type n) {
+#ifdef _ISOC11_SOURCE
         return (pointer)aligned_alloc(N, n*sizeof(value_type));
+#else
+        pointer p;
+        int ret = posix_memalign(reinterpret_cast<void**>(&p), N, n*sizeof(value_type));
+        return ret == 0 ? p : nullptr;
+#endif
     }
     
     inline void deallocate (pointer p, size_type) {

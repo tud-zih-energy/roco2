@@ -24,7 +24,7 @@ namespace kernels
         return (void*)data;
     }
 
-    void* free_firestartet_data(void* data)
+    void free_firestartet_data(void* data)
     {
         free(data);
     }

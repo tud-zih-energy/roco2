@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.6)
 project(roco2)
 
+cmake_policy(SET CMP0060 NEW)
+
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")
 
 # Set a default build type if none was specified
