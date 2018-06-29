@@ -4,7 +4,7 @@ project(roco2)
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")
 
 # Set a default build type if none was specified
-include(cmake/DefaultbuildType.cmake)
+include(cmake/DefaultBuildType.cmake)
 
 include(CTest)
 
