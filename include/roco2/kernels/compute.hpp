@@ -4,7 +4,7 @@
 #include <roco2/kernels/base_kernel.hpp>
 #include <roco2/memory/thread_local.hpp>
 #include <roco2/metrics/utility.hpp>
-#include <roco2/scorep.hpp>
+// #include <roco2/scorep.hpp>
 
 namespace roco2
 {
@@ -38,7 +38,7 @@ namespace kernels
 
         virtual void run_kernel(chrono::time_point until) override
         {
-            SCOREP_USER_REGION("compute_kernel", SCOREP_USER_REGION_TYPE_FUNCTION)
+            // SCOREP_USER_REGION("compute_kernel", SCOREP_USER_REGION_TYPE_FUNCTION)
 
             auto& vec_A = roco2::thread_local_memory().vec_A;
             auto& vec_B = roco2::thread_local_memory().vec_B;
@@ -64,7 +64,7 @@ namespace kernels
                 dd++;
         }
     };
-}
-}
+} // namespace kernels
+} // namespace roco2
 
 #endif // INCLUDE_ROCO2_KERNELS_COMPUTE_HPP

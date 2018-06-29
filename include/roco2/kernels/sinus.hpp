@@ -4,7 +4,7 @@
 #include <roco2/kernels/base_kernel.hpp>
 #include <roco2/memory/thread_local.hpp>
 #include <roco2/metrics/utility.hpp>
-#include <roco2/scorep.hpp>
+// #include <roco2/scorep.hpp>
 
 #include <cmath>
 
@@ -24,7 +24,7 @@ namespace kernels
     private:
         virtual void run_kernel(chrono::time_point until) override
         {
-            SCOREP_USER_REGION("sinus_kernel", SCOREP_USER_REGION_TYPE_FUNCTION)
+            // SCOREP_USER_REGION("sinus_kernel", SCOREP_USER_REGION_TYPE_FUNCTION)
 
             double m = 0.0;
 
@@ -50,7 +50,7 @@ namespace kernels
 
         static const std::size_t sinus_loop = 200000;
     };
-}
-}
+} // namespace kernels
+} // namespace roco2
 
 #endif // INCLUDE_ROCO2_KERNELS_SINUS_HPP

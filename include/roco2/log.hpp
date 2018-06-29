@@ -49,8 +49,9 @@ namespace logging
         std::string format(Record& r)
         {
             std::stringstream s;
-            s << "[" << r.timestamp().count() << "][Thread: " << std::setw(width())
-              << r.omp_thread_id() << "][" << r.severity() << "]: " << r.message();
+            s << "[" << r.timestamp().time_since_epoch().count()
+              << "][Thread: " << std::setw(width()) << r.omp_thread_id() << "][" << r.severity()
+              << "]: " << r.message() << "\n";
 
             return s.str();
         }
@@ -58,10 +59,10 @@ namespace logging
 
     template <typename Record>
     using filter = nitro::log::filter::severity_filter<Record>;
-}
+} // namespace logging
 
-using log = nitro::log::logger<logging::record, logging::formatter, nitro::log::sink::stdout_omp,
+using log = nitro::log::logger<logging::record, logging::formatter, nitro::log::sink::StdOutOmp,
                                logging::filter>;
-}
+} // namespace roco2
 
 #endif // INCLUDE_ROCO2_LOG_HPP

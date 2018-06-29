@@ -32,7 +32,7 @@ namespace kernels
 
         virtual void run_kernel(chrono::time_point until) override
         {
-            SCOREP_USER_REGION("matmul_kernel", SCOREP_USER_REGION_TYPE_FUNCTION)
+            // SCOREP_USER_REGION("matmul_kernel", SCOREP_USER_REGION_TYPE_FUNCTION)
 
             double* A = roco2::thread_local_memory().mat_A.data();
             double* B = roco2::thread_local_memory().mat_B.data();
@@ -44,7 +44,7 @@ namespace kernels
 
             do
             {
-// SCOREP_USER_REGION("matmul_kernel_loop", SCOREP_USER_REGION_TYPE_FUNCTION)
+                // SCOREP_USER_REGION("matmul_kernel_loop", SCOREP_USER_REGION_TYPE_FUNCTION)
 
 #if defined USE_MKL || defined USE_CBLAS
                 cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, m, m, m, 1.0, A, m, B, m,
@@ -60,7 +60,7 @@ namespace kernels
             roco2::metrics::utility::instance().write(loops);
         }
     };
-}
-}
+} // namespace kernels
+} // namespace roco2
 
 #endif // INCLUDE_ROCO2_KERNELS_MATMUL_HPP

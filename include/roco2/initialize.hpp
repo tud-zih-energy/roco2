@@ -10,7 +10,7 @@
 #include <roco2/metrics/experiment.hpp>
 #include <roco2/metrics/threads.hpp>
 #include <roco2/metrics/utility.hpp>
-#include <roco2/scorep.hpp>
+// #include <roco2/scorep.hpp>
 
 #include <omp.h>
 
@@ -25,7 +25,7 @@ class initialize
 public:
     static void master()
     {
-        SCOREP_USER_REGION("master_init", SCOREP_USER_REGION_TYPE_FUNCTION)
+        // SCOREP_USER_REGION("master_init", SCOREP_USER_REGION_TYPE_FUNCTION)
 
         // initialize the cpu topology structure
         auto& topology = roco2::cpu::topology::instance();
@@ -49,7 +49,7 @@ public:
                                             roco2::chrono::duration experiment_duration,
                                             bool eta_only)
     {
-        SCOREP_USER_REGION("thread_init", SCOREP_USER_REGION_TYPE_FUNCTION)
+        // SCOREP_USER_REGION("thread_init", SCOREP_USER_REGION_TYPE_FUNCTION)
 
 #pragma omp barrier
 
@@ -74,8 +74,8 @@ public:
         log::info() << "Checking affinity of thread to correct cpu";
         if (cpu::info::current_cpu() != cpu::info::current_thread())
         {
-            raise("Thread ", cpu::info::current_thread(), " is on wrong cpu: ",
-                  cpu::info::current_cpu());
+            raise("Thread ", cpu::info::current_thread(),
+                  " is on wrong cpu: ", cpu::info::current_cpu());
         }
 
         thread_local_memory();
@@ -106,6 +106,6 @@ public:
         return then;
     }
 };
-}
+} // namespace roco2
 
 #endif // INCLUDE_ROCO2_INITIALIZE_HPP

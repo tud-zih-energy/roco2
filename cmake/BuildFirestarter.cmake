@@ -33,4 +33,8 @@ add_custom_target(libfirestarter ALL DEPENDS ${CMAKE_BINARY_DIR}/firestarter/lib
 set(FIRESTARTER_LIBRARIES ${CMAKE_BINARY_DIR}/firestarter/libfirestarter.so)
 set(FIRESTARTER_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/firestarter)
 
+add_library(firestarter INTERFACE)
+target_link_libraries(firestarter INTERFACE ${CMAKE_BINARY_DIR}/firestarter/libfirestarter.so)
+target_include_directories(firestarter INTERFACE ${CMAKE_BINARY_DIR}/firestarter)
+
 set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_BINARY_DIR}/firestarter)

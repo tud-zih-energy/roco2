@@ -8,7 +8,7 @@
 #include <roco2/metrics/metric_guard.hpp>
 #include <roco2/metrics/threads.hpp>
 #include <roco2/metrics/utility.hpp>
-#include <roco2/scorep.hpp>
+// #include <roco2/scorep.hpp>
 
 #include <algorithm>
 #include <chrono>
@@ -39,7 +39,7 @@ namespace kernels
                 roco2::metrics::metric_guard<roco2::metrics::experiment> guard(2);
                 roco2::metrics::threads::instance().write(on.num_threads());
 
-                SCOREP_USER_REGION("idle_sleep", SCOREP_USER_REGION_TYPE_FUNCTION)
+                // SCOREP_USER_REGION("idle_sleep", SCOREP_USER_REGION_TYPE_FUNCTION)
 
                 std::this_thread::sleep_until(until);
 
@@ -57,7 +57,7 @@ namespace kernels
         {
         }
     };
-}
-}
+} // namespace kernels
+} // namespace roco2
 
 #endif // INCLUDE_ROCO2_KERNELS_KERNEL_HPP

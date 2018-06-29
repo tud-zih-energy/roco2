@@ -4,7 +4,7 @@
 #include <roco2/chrono/util.hpp>
 #include <roco2/kernels/base_kernel.hpp>
 #include <roco2/metrics/utility.hpp>
-#include <roco2/scorep.hpp>
+// #include <roco2/scorep.hpp>
 
 namespace roco2
 {
@@ -22,13 +22,13 @@ namespace kernels
     private:
         void run_kernel(roco2::chrono::time_point tp) override
         {
-            SCOREP_USER_REGION("idle_sleep", SCOREP_USER_REGION_TYPE_FUNCTION)
+            // SCOREP_USER_REGION("idle_sleep", SCOREP_USER_REGION_TYPE_FUNCTION)
 
             std::this_thread::sleep_until(tp);
             roco2::metrics::utility::instance().write(1);
         }
     };
-}
-}
+} // namespace kernels
+} // namespace roco2
 
 #endif // INCLUDE_ROCO2_KERNELS_IDLE_HPP

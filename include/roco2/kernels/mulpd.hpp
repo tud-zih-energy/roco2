@@ -5,7 +5,7 @@
 #include <roco2/kernels/base_kernel.hpp>
 #include <roco2/memory/thread_local.hpp>
 #include <roco2/metrics/utility.hpp>
-#include <roco2/scorep.hpp>
+// #include <roco2/scorep.hpp>
 
 #include <limits>
 
@@ -23,7 +23,7 @@ namespace kernels
 
         virtual void run_kernel(chrono::time_point until) override
         {
-            SCOREP_USER_REGION("mulpd_kernel", SCOREP_USER_REGION_TYPE_FUNCTION)
+            // SCOREP_USER_REGION("mulpd_kernel", SCOREP_USER_REGION_TYPE_FUNCTION)
 
             auto& comp_A = thread_local_memory().vec_A;
 
@@ -48,7 +48,7 @@ namespace kernels
         // should be around 2ms per call of mulpd_kernel
         static const std::size_t repeat = 4096 * 1024;
     };
-}
-}
+} // namespace kernels
+} // namespace roco2
 
 #endif // INCLUDE_ROCO2_KERNELS_MULPD_HPP

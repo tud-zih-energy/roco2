@@ -4,31 +4,19 @@ project(roco2)
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")
 
 # Set a default build type if none was specified
-if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-    message(STATUS "Setting build type to 'Release' as none was specified.")
-    set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
-
-    # Set the possible values of build type for cmake-gui
-    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release"
-        "MinSizeRel" "RelWithDebInfo")
-endif()
+include(cmake/DefaultbuildType.cmake)
 
 include(CTest)
 
 # Intialize git submodules if not done already
-file(GLOB SUBMODULE_FILES "lib/nitro/*")
-list(LENGTH SUBMODULE_FILES COUNT_NITRO)
-file(GLOB SUBMODULE_FILES "lib/FIRESTARTER/*")
-list(LENGTH SUBMODULE_FILES FIRESTARTER_NITRO)
-if(${COUNT_NITRO} EQUAL 0 OR ${FIRESTARTER_NITRO} EQUAL 0)
-    message(STATUS "Initializing git submodule")
-    execute_process(COMMAND "git" "submodule" "init" WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
-endif()
-message(STATUS "Updating git submodule")
-execute_process(COMMAND "git" "submodule" "update" WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
+include(cmake/GitSubmoduleUpdate.cmake)
+git_submodule_update()
+
+add_library(roco2 INTERFACE)
 
 # enable C++11
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -Wextra -pedantic")
+target_compile_features(roco2 INTERFACE cxx_std_14)
+target_compile_options(roco2 INTERFACE $<$<CONFIG:Debug>:-O0 -Werror> -Wall -Wextra -pedantic)
 
 #enable C99
 SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
@@ -36,78 +24,94 @@ SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
 # einfach den code mit magic macros vollscheissen, bis es geht :o)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_POSIX_C_SOURCE -D_BSD_SOURCE -D_DEFAULT_SOURCE -D_GNU_SOURCE")
 
-# set additional flags for debug build
-SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
-
-# set additional flags for release build
-SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3") # -funroll-loops")
 
 find_package(OpenMP REQUIRED)
-if (OPENMP_FOUND)
-    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-endif()
+target_link_libraries(roco2 INTERFACE OpenMP::OpenMP_CXX)
 
-option(USE_MKL "Whether to use MKL or LAPACK for matmul kernel" ON)
-if(USE_MKL)
-    # set definition to use MKL in matmul kernel
-    set(MKL_SDL "ON")
-    find_package(MKL REQUIRED)
-    if (MKL_FOUND)
-        include_directories(SYSTEM ${MKL_INCLUDE_DIRS})
+# option(USE_MKL "Whether to use MKL or LAPACK for matmul kernel" ON)
+# if(USE_MKL)
+#     # set definition to use MKL in matmul kernel
+#     set(MKL_SDL "ON")
+#     find_package(MKL REQUIRED)
+#     if (MKL_FOUND)
+#         include_directories(SYSTEM ${MKL_INCLUDE_DIRS})
+#
+#         add_definitions(-DUSE_MKL)
+#     endif()
+# else()
+#     find_package(LAPACK REQUIRED)
+#     add_definitions(-DUSE_CBLAS)
+# endif()
 
-        add_definitions(-DUSE_MKL)
-    endif()
-else()
-    find_package(LAPACK REQUIRED)
-    add_definitions(-DUSE_CBLAS)
-endif()
+# this should also find MKL
+find_package(LAPACK REQUIRED)
+target_link_libraries(roco2 INTERFACE ${LAPACK_LIBRARIES} ${LAPACK_LINKER_FLAGS})
+target_compile_definitions(roco2 INTERFACE USE_CBLAS)
+
 
 # quirk for CMAKE 3.0 and newer
-cmake_policy(SET CMP0026 OLD)
+# cmake_policy(SET CMP0026 OLD)
 
-find_package(Scorep REQUIRED)
-if (SCOREP_FOUND)
-    include_directories(SYSTEM ${SCOREP_INCLUDE_DIRS})
-endif()
+# find_package(Scorep REQUIRED)
+# if (SCOREP_FOUND)
+#     include_directories(SYSTEM ${SCOREP_INCLUDE_DIRS})
+# endif()
 
 find_package(LibNuma REQUIRED)
 if (LIBNUMA_FOUND)
-    include_directories(SYSTEM ${LIBNUMA_INCLUDE_DIRS})
+    target_include_directories(roco2 INTERFACE SYSTEM ${LIBNUMA_INCLUDE_DIRS})
+    target_link_libraries(roco2 INTERFACE ${LIBNUMA_LIBRARIES})
 else()
     message(FATAL_ERROR "libnuma wasn't found, but is mandatory.")
 endif()
 
 find_package(CpuFreq REQUIRED)
 if (CPUFREQ_FOUND)
-    include_directories(SYSTEM ${CPUFREQ_INCLUDE_DIRS})
+    target_include_directories(roco2 INTERFACE SYSTEM ${CPUFREQ_INCLUDE_DIRS})
+    target_link_libraries(roco2 INTERFACE ${CPUFREQ_LIBRARIES})
 else()
     message(FATAL_ERROR "cpufreq wasn't found, but is mandatory.")
 endif()
 
 find_package(X86Adapt)
 if (X86Adapt_FOUND)
-    add_definitions(-DHAS_X86ADAPT)
-    include_directories(SYSTEM ${X86ADAPT_INCLUDE_DIRS})
+    target_compile_definitions(roco2 INTERFACE HAS_X86ADAPT)
+    target_include_directories(roco2 INTERFACE SYSTEM ${X86ADAPT_INCLUDE_DIRS})
+    target_link_libraries(roco2 INTERFACE ${X86ADAPT_LIBRARIES})
 else()
     message(STATUS "X86Adapt wasn't found, DDCM not available.")
 endif()
 
 include(cmake/BuildFirestarter.cmake)
 
-include_directories(include)
+target_include_directories(roco2 INTERFACE include)
 
 option(ROCO2_ASSERTIONS "enable additional checks with runtime overhead." OFF)
 
 if(ROCO2_ASSERTIONS)
     message(STATUS "Additional runtime checks enabled. This may influence the measurement")
-    add_definitions(-DROCO2_ASSERTIONS)
+    target_compile_definitions(roco2 INTERFACE ROCO2_ASSERTIONS)
 endif()
 
-add_definitions(-DREGONLY)
+target_compile_definitions(roco2 INTERFACE REGONLY)
 
-include(lib/nitro/Nitro.cmake)
+add_subdirectory(lib/nitro)
+target_link_libraries(roco2 INTERFACE Nitro::nitro-log)
 
-include(cmake/Roco2Configuration.cmake)
+macro(Roco2Configuration CONF )
+    add_executable(roco2_${CONF} experiment.cpp)
+
+    target_link_libraries(
+        roco2_${CONF}
+        # fastcpufreq
+        # ${FIRESTARTER_LIBRARIES}
+        roco2_core
+        roco2_main
+    )
+
+    # add_scorep_instrumentation(roco2_${CONF})
+
+    install(TARGETS roco2_${CONF} RUNTIME DESTINATION bin)
+endmacro()
 
 add_subdirectory(src)
