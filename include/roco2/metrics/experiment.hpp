@@ -33,11 +33,7 @@ namespace metrics
             return e;
         }
 
-        void __attribute__((optimize("O0"))) write(std::uint64_t value)
-        {
-            // SCOREP_USER_METRIC_UINT64(experiment_metric, value)
-            (void)value;
-        }
+        void write(std::uint64_t value);
     };
 } // namespace metrics
 } // namespace roco2

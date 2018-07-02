@@ -1,6 +1,6 @@
 add_library(roco2_core STATIC
     asm_kernels.c
-    # metrics.cpp
+    metrics.cpp
     firestarter_kernel.cpp
     cpu.cpp
     fastcpufreq.c
