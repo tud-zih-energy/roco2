@@ -20,8 +20,7 @@ namespace roco2
 {
 namespace metrics
 {
-    void __attribute__((optimize("O0"))) experiment::write(std::uint64_t value);
-
+    void __attribute__((optimize("O0"))) experiment::write(std::uint64_t value)
     {
         // SCOREP_USER_METRIC_UINT64(experiment_metric, value)
         (void)value;
