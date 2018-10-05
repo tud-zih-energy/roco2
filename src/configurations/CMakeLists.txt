@@ -1,7 +1,5 @@
 file(GLOB CFGS RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" *)
 
-message("cfgs: ${CFGS}")
-
 FOREACH(CFG ${CFGS})
     if(IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${CFG}")
         option("BUILD_CFG_${CFG}" "Was weiss ich denn" OFF)
