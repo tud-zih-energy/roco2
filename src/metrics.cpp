@@ -10,7 +10,9 @@ SCOREP_USER_METRIC_GLOBAL(frequency_metric)
 SCOREP_USER_METRIC_GLOBAL(ddcm_metric)
 SCOREP_USER_METRIC_GLOBAL(c_state_limit_metric)
 SCOREP_USER_METRIC_GLOBAL(utility_metric)
+SCOREP_USER_METRIC_GLOBAL(shell_metric)
 
+#include <roco2/metrics/ddcm.hpp>
 #include <roco2/metrics/experiment.hpp>
 #include <roco2/metrics/frequency.hpp>
 #include <roco2/metrics/shell.hpp>
