@@ -1,6 +1,6 @@
 #include <roco2/initialize.hpp>
 
-#include <roco2/cpu/c_state_limit.hpp>
+#include <roco2/cpu/shell.hpp>
 #include <roco2/cpu/frequency.hpp>
 #include <roco2/cpu/topology.hpp>
 
@@ -49,19 +49,24 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
     roco2::kernels::addpd addpd;
 
     roco2::cpu::frequency freqctl;
+    roco2::cpu::shell cstatectl("elab cstate enable ", "elab cstate enable", "elab cstate enable");
 
     roco2::memory::numa_bind_local nbl;
 
     // ------ EDIT GENERIC SETTINGS BELOW THIS LINE ------
 
-    auto experiment_duration = std::chrono::seconds(10);
+    auto experiment_duration = std::chrono::seconds(1);
 
- //   auto freq_list = std::vector<unsigned>{ 2000, 1600, 1200 };
-    auto freq_list = std::vector<unsigned>{ 2000 };
+    auto freq_list = std::vector<unsigned>{ 2000, /*1600,*/ 1200 };
 
-    auto on_list = //sub_block_pattern(8, 16) >>
-        block_pattern(2, false, triangle_shape::upper);
-                   //stride_pattern(8, 16);
+    auto on_list = sub_block_pattern(2*4, 16)/* >>
+                   block_pattern(2, false, triangle_shape::upper) >>
+                   stride_pattern(1, 32) >>
+                   stride_pattern(1, 16) >>
+                   stride_pattern(1, 8) >>
+                   stride_pattern(1, 4)*/;
+
+    auto cstate_list = std::vector<roco2::cpu::shell::setting_type>{ { 0, "--only POLL" }, { 1, "C1" }, { 2, "C2" } };
 
     // ------ EDIT GENERIC SETTINGS ABOVE THIS LINE ------
 
@@ -88,16 +93,19 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
 
     // ------ EDIT TASK PLAN BELOW THIS LINE ------
 
-    // do one full idle
-    experiment(idle, roco2::experiments::cpu_sets::all_cpus());
-
-    // for each frequency
-    for (const auto& freq : freq_list)
+    for (const auto& cstate_setting : cstate_list)
     {
-        setting([&freqctl, freq]() { freqctl.change(freq); });
+        setting([&cstatectl, cstate_setting]() { cstatectl.change(cstate_setting); });
 
-        for (const auto& on : on_list)
+        // do one full idle
+        experiment(idle, roco2::experiments::cpu_sets::all_cpus());
+
+        for (const auto& freq : freq_list)
         {
+            setting([&freqctl, freq]() { freqctl.change(freq); });
+
+            for (const auto& on : on_list)
+            {
                 experiment(bw, on);
                 experiment(cp, on);
                 experiment(sinus, on);
@@ -108,6 +116,7 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
                 experiment(mulpd, on);
                 experiment(squareroot, on);
                 experiment(mm, on);
+            }
         }
     }
 

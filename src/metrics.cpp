@@ -15,6 +15,7 @@
 #include <roco2/metrics/frequency.hpp>
 #include <roco2/metrics/threads.hpp>
 #include <roco2/metrics/utility.hpp>
+#include <roco2/metrics/shell.hpp>
 
 namespace roco2
 {
@@ -44,5 +45,10 @@ namespace metrics
         (void)value;
     }
 
+    void __attribute__((optimize("O0"))) shell::write(std::int64_t value)
+    {
+        // SCOREP_USER_METRIC_UINT64(shell_metric, value)
+        (void)value;
+    }
 } // namespace metrics
 } // namespace roco2
