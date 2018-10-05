@@ -99,7 +99,7 @@ namespace memory
                 return;
             }
 
-            log::info() << "Bound on local numa node";
+            log::debug() << "Bound on local numa node";
         }
 
         ~numa_bind_local()

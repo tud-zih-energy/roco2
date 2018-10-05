@@ -71,7 +71,7 @@ public:
             roco2::metrics::threads::instance().write(omp_get_num_threads());
         }
 
-        log::info() << "Checking affinity of thread to correct cpu";
+        log::debug() << "Checking affinity of thread to correct cpu";
         if (cpu::info::current_cpu() != cpu::info::current_thread())
         {
             raise("Thread ", cpu::info::current_thread(),
@@ -80,9 +80,9 @@ public:
 
         thread_local_memory();
 
-        log::info() << "Allocated and first touched memory";
+        log::debug() << "Allocated and first touched memory";
 
-        log::info() << "Waiting for nice starting point";
+        log::debug() << "Waiting for nice starting point";
 
         auto then = start_point + experiment_duration;
 
@@ -96,7 +96,7 @@ public:
             now = roco2::chrono::now();
         }
 
-        log::info() << "Starting at: " << then.time_since_epoch().count();
+        log::debug() << "Starting at: " << then.time_since_epoch().count();
 
         std::this_thread::sleep_until(then);
 

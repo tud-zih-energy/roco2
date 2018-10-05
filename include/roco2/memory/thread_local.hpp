@@ -50,8 +50,8 @@ namespace detail
                 firestarter_buffer[i] =
                     0.25 + static_cast<double>(i % 9267) * 0.24738995982e-4;
             }
-            
-            log::info() << "Memory allocated and touched.";
+
+            log::debug() << "Memory allocated and touched.";
         }
 
         std::vector<double> vec_A;
