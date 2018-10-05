@@ -118,7 +118,7 @@ namespace cpu
             uint32_t socket;
             bool online;
 
-            core(uint32_t id = 0, uint32_t socket = -1, bool online = false)
+            core(uint32_t id = 0, uint32_t socket = static_cast<uint32_t>(-1), bool online = false)
             : id(id), socket(socket), online(online)
             {
             }
