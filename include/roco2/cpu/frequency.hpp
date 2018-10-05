@@ -82,7 +82,14 @@ namespace cpu
         ~frequency()
         {
             // restore frequency
-            change(start_frequency_);
+            try
+            {
+                change(start_frequency_);
+            }
+            catch (const std::exception& e)
+            {
+                log::error() << "Failed to restore original frequency: " << e.what();
+            }
 
 #pragma omp barrier
 #pragma omp master
