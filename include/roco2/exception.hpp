@@ -1,6 +1,8 @@
 #ifndef INCLUDE_ROCO2_EXCEPTION_HPP
 #define INCLUDE_ROCO2_EXCEPTION_HPP
 
+#include <roco2/log.hpp>
+
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -11,6 +13,7 @@ struct exception : std::runtime_error
 {
     explicit exception(const std::string& arg) : std::runtime_error(arg)
     {
+        log::error() << arg;
     }
 };
 
