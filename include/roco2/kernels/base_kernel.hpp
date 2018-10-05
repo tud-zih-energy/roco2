@@ -27,18 +27,15 @@ namespace kernels
 
         void run(roco2::chrono::time_point until, roco2::experiments::cpu_sets::cpu_set on)
         {
+            roco2::metrics::metric_guard<roco2::metrics::experiment> guard(this->tag());
+            roco2::metrics::threads::instance().write(on.num_threads());
             if (std::find(on.begin(), on.end(), roco2::cpu::info::current_thread()) != on.end())
             {
-                roco2::metrics::metric_guard<roco2::metrics::experiment> guard(this->tag());
-                roco2::metrics::threads::instance().write(on.num_threads());
 
                 this->run_kernel(until);
             }
             else
             {
-                roco2::metrics::metric_guard<roco2::metrics::experiment> guard(2);
-                roco2::metrics::threads::instance().write(on.num_threads());
-
                 // SCOREP_USER_REGION("idle_sleep", SCOREP_USER_REGION_TYPE_FUNCTION)
 
                 std::this_thread::sleep_until(until);
