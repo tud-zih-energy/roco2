@@ -2,9 +2,9 @@
 #define INCLUDE_ROCO2_METRICS_DDCM_HPP
 
 #include <cstdint>
-// #include <roco2/scorep.hpp>
+#include <roco2/scorep.hpp>
 
-// SCOREP_USER_METRIC_EXTERNAL(ddcm_metric)
+SCOREP_USER_METRIC_EXTERNAL(ddcm_metric)
 
 namespace roco2
 {
@@ -15,9 +15,9 @@ namespace metrics
     {
         ddcm()
         {
-            // SCOREP_USER_METRIC_INIT(ddcm_metric, "Dynamic Duty Cycles", "%",
-            //                         SCOREP_USER_METRIC_TYPE_DOUBLE,
-            //                         SCOREP_USER_METRIC_CONTEXT_GLOBAL)
+            SCOREP_USER_METRIC_INIT(ddcm_metric, "Dynamic Duty Cycles", "%",
+                                    SCOREP_USER_METRIC_TYPE_DOUBLE,
+                                    SCOREP_USER_METRIC_CONTEXT_GLOBAL)
         }
 
     public:
@@ -33,11 +33,7 @@ namespace metrics
             return e;
         }
 
-        void __attribute__((optimize("O0"))) write(double value)
-        {
-            // SCOREP_USER_METRIC_DOUBLE(ddcm_metric, value)
-            (void)value;
-        }
+        void __attribute__((optimize("O0"))) write(double value);
     };
 } // namespace metrics
 } // namespace roco2

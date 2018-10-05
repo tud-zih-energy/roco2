@@ -32,7 +32,7 @@ namespace kernels
 
         virtual void run_kernel(chrono::time_point until) override
         {
-            // SCOREP_USER_REGION("matmul_kernel", SCOREP_USER_REGION_TYPE_FUNCTION)
+            SCOREP_USER_REGION("matmul_kernel", SCOREP_USER_REGION_TYPE_FUNCTION)
 
             double* A = roco2::thread_local_memory().mat_A.data();
             double* B = roco2::thread_local_memory().mat_B.data();

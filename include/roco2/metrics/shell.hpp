@@ -1,9 +1,9 @@
 #pragma once
 
 #include <cstdint>
-// #include <roco2/scorep.hpp>
+#include <roco2/scorep.hpp>
 
-// SCOREP_USER_METRIC_EXTERNAL(shell_metric)
+SCOREP_USER_METRIC_EXTERNAL(shell_metric)
 
 namespace roco2
 {
@@ -13,9 +13,9 @@ namespace metrics
     {
         shell()
         {
-            // SCOREP_USER_METRIC_INIT(shell_metric, "generic_shell_metric", "#",
-            //                         SCOREP_USER_METRIC_TYPE_INT64,
-            //                         SCOREP_USER_METRIC_CONTEXT_GLOBAL)
+            SCOREP_USER_METRIC_INIT(shell_metric, "generic_shell_metric", "#",
+                                    SCOREP_USER_METRIC_TYPE_INT64,
+                                    SCOREP_USER_METRIC_CONTEXT_GLOBAL)
         }
 
     public:

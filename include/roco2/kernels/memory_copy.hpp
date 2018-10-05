@@ -4,7 +4,7 @@
 #include <roco2/kernels/base_kernel.hpp>
 #include <roco2/memory/thread_local.hpp>
 #include <roco2/metrics/utility.hpp>
-// #include <roco2/scorep.hpp>
+#include <roco2/scorep.hpp>
 
 namespace roco2
 {
@@ -23,7 +23,7 @@ namespace kernels
     private:
         virtual void run_kernel(chrono::time_point until) override
         {
-            // SCOREP_USER_REGION("memory_kernel", SCOREP_USER_REGION_TYPE_FUNCTION)
+            SCOREP_USER_REGION("memory_copy", SCOREP_USER_REGION_TYPE_FUNCTION)
 
             auto& my_mem_buffer = roco2::thread_local_memory().mem_buffer;
 

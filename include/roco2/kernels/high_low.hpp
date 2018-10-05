@@ -4,7 +4,7 @@
 #include <roco2/chrono/util.hpp>
 #include <roco2/kernels/base_kernel.hpp>
 #include <roco2/metrics/utility.hpp>
-// #include <roco2/scorep.hpp>
+#include <roco2/scorep.hpp>
 
 namespace roco2
 {
@@ -28,7 +28,7 @@ namespace kernels
     private:
         void run_kernel(roco2::chrono::time_point tp) override
         {
-            // SCOREP_USER_REGION("high_low_bs_kernel", SCOREP_USER_REGION_TYPE_FUNCTION)
+            SCOREP_USER_REGION("high_low_bs_kernel", SCOREP_USER_REGION_TYPE_FUNCTION)
             roco2::chrono::time_point deadline = std::chrono::high_resolution_clock::now();
 
             std::size_t loops = 0;

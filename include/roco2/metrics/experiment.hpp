@@ -2,9 +2,9 @@
 #define INCLUDE_ROCO2_METRICS_EXPERIMENT_HPP
 
 #include <cstdint>
-// #include <roco2/scorep.hpp>
+#include <roco2/scorep.hpp>
 
-// SCOREP_USER_METRIC_EXTERNAL(experiment_metric)
+SCOREP_USER_METRIC_EXTERNAL(experiment_metric)
 
 namespace roco2
 {
@@ -15,9 +15,9 @@ namespace metrics
     {
         experiment()
         {
-            // SCOREP_USER_METRIC_INIT(experiment_metric, "Experiment", "#",
-            //                         SCOREP_USER_METRIC_TYPE_UINT64,
-            //                         SCOREP_USER_METRIC_CONTEXT_GLOBAL)
+            SCOREP_USER_METRIC_INIT(experiment_metric, "Experiment", "#",
+                                    SCOREP_USER_METRIC_TYPE_UINT64,
+                                    SCOREP_USER_METRIC_CONTEXT_GLOBAL)
         }
 
     public:

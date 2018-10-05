@@ -2,9 +2,9 @@
 #define INCLUDE_ROCO2_METRICS_UTILITY_HPP
 
 #include <cstdint>
-// #include <roco2/scorep.hpp>
+#include <roco2/scorep.hpp>
 
-// SCOREP_USER_METRIC_EXTERNAL(utility_metric)
+SCOREP_USER_METRIC_EXTERNAL(utility_metric)
 
 namespace roco2
 {
@@ -15,9 +15,8 @@ namespace metrics
     {
         utility()
         {
-            // SCOREP_USER_METRIC_INIT(utility_metric, "Utility", "#",
-            // SCOREP_USER_METRIC_TYPE_UINT64,
-            //                         SCOREP_USER_METRIC_CONTEXT_GLOBAL)
+            SCOREP_USER_METRIC_INIT(utility_metric, "Utility", "#", SCOREP_USER_METRIC_TYPE_UINT64,
+                                    SCOREP_USER_METRIC_CONTEXT_GLOBAL)
         }
 
     public:

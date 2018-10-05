@@ -2,9 +2,9 @@
 #define INCLUDE_ROCO2_METRICS_FREQUENCY_HPP
 
 #include <cstdint>
-// #include <roco2/scorep.hpp>
+#include <roco2/scorep.hpp>
 
-// SCOREP_USER_METRIC_EXTERNAL(frequency_metric)
+SCOREP_USER_METRIC_EXTERNAL(frequency_metric)
 
 namespace roco2
 {
@@ -15,9 +15,9 @@ namespace metrics
     {
         frequency()
         {
-            // SCOREP_USER_METRIC_INIT(frequency_metric, "Frequency", "Hz",
-            //                         SCOREP_USER_METRIC_TYPE_UINT64,
-            //                         SCOREP_USER_METRIC_CONTEXT_GLOBAL)
+            SCOREP_USER_METRIC_INIT(frequency_metric, "Frequency", "Hz",
+                                    SCOREP_USER_METRIC_TYPE_UINT64,
+                                    SCOREP_USER_METRIC_CONTEXT_GLOBAL)
         }
 
     public:
