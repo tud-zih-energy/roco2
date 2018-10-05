@@ -69,7 +69,8 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
 
 #pragma omp master
     {
-        roco2::log::info() << "Experiment list has " << on_list.size() << " entries: " << on_list;
+        roco2::log::info() << "Number of frequencies: " << freq_list.size();
+        roco2::log::info() << "Number of placements:  " << on_list.size() << on_list;
     }
 
 #pragma omp barrier

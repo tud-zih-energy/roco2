@@ -69,16 +69,27 @@ namespace experiments
                 return data.size();
             }
 
+            std::size_t max() const
+            {
+                if (data.empty())
+                {
+                    return 0;
+                }
+                return *data.rbegin() + 1;
+            }
+
         private:
             container data;
         };
 
         inline std::ostream& operator<<(std::ostream& s, const cpu_set& r)
         {
-            s << "( ";
-            for (auto& i : r)
-                s << i << " ";
-            return s << ")";
+            s << "[";
+            for (std::size_t cpu = 0; cpu < r.max(); cpu++)
+            {
+                s << (r.contains(cpu) ? "#" : ".");
+            }
+            return s << "]";
         }
 
         inline cpu_set operator|(cpu_set a, const cpu_set& b)

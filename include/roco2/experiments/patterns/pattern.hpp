@@ -68,18 +68,9 @@ namespace experiments
 
         inline std::ostream& operator<<(std::ostream& s, const pattern& r)
         {
-            bool first = true;
-            for (auto& i : r)
+            for (const auto& i : r)
             {
-                if (!first)
-                {
-                    s << " >> ";
-                }
-                else
-                {
-                    first = false;
-                }
-                s << i;
+                s << "\n" << i;
             }
             return s;
         }
