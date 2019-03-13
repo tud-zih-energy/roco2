@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.11)
 project(roco2)
 
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")
@@ -16,7 +16,7 @@ add_library(roco2 INTERFACE)
 
 # enable C++11
 target_compile_features(roco2 INTERFACE cxx_std_14)
-target_compile_options(roco2 INTERFACE $<$<CONFIG:Debug>:-O0 -Werror> -Wall -Wextra -pedantic)
+target_compile_options(roco2 INTERFACE $<$<CONFIG:Debug>:-O0> -Wall -Wextra -pedantic)
 
 #enable C99
 SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
@@ -48,36 +48,19 @@ find_package(LAPACK REQUIRED)
 target_link_libraries(roco2 INTERFACE ${LAPACK_LIBRARIES} ${LAPACK_LINKER_FLAGS})
 target_compile_definitions(roco2 INTERFACE USE_CBLAS)
 
+find_package(Scorep REQUIRED)
+target_link_libraries(roco2 INTERFACE Scorep::Plugin)
 
-# quirk for CMAKE 3.0 and newer
-# cmake_policy(SET CMP0026 OLD)
-
-# find_package(Scorep REQUIRED)
-# if (SCOREP_FOUND)
-#     include_directories(SYSTEM ${SCOREP_INCLUDE_DIRS})
-# endif()
-
-find_package(LibNuma REQUIRED)
-if (LIBNUMA_FOUND)
-    target_include_directories(roco2 INTERFACE SYSTEM ${LIBNUMA_INCLUDE_DIRS})
-    target_link_libraries(roco2 INTERFACE ${LIBNUMA_LIBRARIES})
-else()
-    message(FATAL_ERROR "libnuma wasn't found, but is mandatory.")
-endif()
+find_package(NUMA REQUIRED)
+target_link_libraries(roco2 INTERFACE NUMA::NUMA)
 
 find_package(CpuFreq REQUIRED)
-if (CPUFREQ_FOUND)
-    target_include_directories(roco2 INTERFACE SYSTEM ${CPUFREQ_INCLUDE_DIRS})
-    target_link_libraries(roco2 INTERFACE ${CPUFREQ_LIBRARIES})
-else()
-    message(FATAL_ERROR "cpufreq wasn't found, but is mandatory.")
-endif()
+target_link_libraries(roco2 INTERFACE Cpufreq::Cpufreq)
 
 find_package(X86Adapt)
 if (X86Adapt_FOUND)
     target_compile_definitions(roco2 INTERFACE HAS_X86ADAPT)
-    target_include_directories(roco2 INTERFACE SYSTEM ${X86ADAPT_INCLUDE_DIRS})
-    target_link_libraries(roco2 INTERFACE ${X86ADAPT_LIBRARIES})
+    target_link_libraries(roco2 INTERFACE X86Adapt::X86Adapt)
 else()
     message(STATUS "X86Adapt wasn't found, DDCM not available.")
 endif()
@@ -96,7 +79,7 @@ endif()
 target_compile_definitions(roco2 INTERFACE REGONLY)
 
 add_subdirectory(lib/nitro)
-target_link_libraries(roco2 INTERFACE Nitro::nitro-log)
+target_link_libraries(roco2 INTERFACE Nitro::log)
 
 macro(Roco2Configuration CONF )
     add_executable(roco2_${CONF} experiment.cpp)
@@ -108,8 +91,6 @@ macro(Roco2Configuration CONF )
         roco2_core
         roco2_main
     )
-
-    # add_scorep_instrumentation(roco2_${CONF})
 
     install(TARGETS roco2_${CONF} RUNTIME DESTINATION bin)
 endmacro()

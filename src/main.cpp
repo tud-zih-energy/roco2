@@ -18,27 +18,46 @@ int main(int argc, char** argv)
 
     roco2::log::info() << "Starting initialize at: " << starting_point.time_since_epoch().count();
 
+    bool eta_only;
+
     // first assumption:
     // GOMP_CPU_AFFINITY or respectivly KMP_AFFINITY was set to a sane value.
+
     nitro::broken_options::parser parser;
 
+    parser.toggle("help").short_name("h");
     parser.toggle("debug").short_name("d");
     parser.toggle("eta_only").short_name("e");
 
-    auto options = parser.parse(argc, argv);
-
-    if (options.given("debug"))
+    try
     {
-        roco2::logging::filter<roco2::logging::record>::set_severity(
-            nitro::log::severity_level::debug);
-    }
-    else
-    {
-        roco2::logging::filter<roco2::logging::record>::set_severity(
-            nitro::log::severity_level::info);
-    }
+        auto options = parser.parse(argc, argv);
 
-    bool eta_only = options.given("eta_only");
+        if (options.given("help"))
+        {
+            parser.usage();
+            return 0;
+        }
+
+        if (options.given("debug"))
+        {
+            roco2::logging::filter<roco2::logging::record>::set_severity(
+                nitro::log::severity_level::debug);
+        }
+        else
+        {
+            roco2::logging::filter<roco2::logging::record>::set_severity(
+                nitro::log::severity_level::info);
+        }
+
+        eta_only = options.given("eta_only");
+    }
+    catch (nitro::broken_options::parsing_error& e)
+    {
+        roco2::log::warn() << e.what();
+        parser.usage();
+        return 1;
+    }
 
     // TODO: What is this for?
     omp_set_dynamic(0);
@@ -51,8 +70,8 @@ int main(int argc, char** argv)
     // Therefore we have this boolean flag here.
     bool exception_happend = false;
 
-#pragma omp parallel default(shared) shared(starting_point,                                        \
-                                            exception_happend) firstprivate(eta_only)
+#pragma omp parallel default(shared) shared(starting_point, exception_happend)                     \
+    firstprivate(eta_only)
     {
         try
         {

@@ -8,11 +8,9 @@ add_library(roco2_core STATIC
 )
 target_link_libraries(roco2_core PUBLIC firestarter roco2)
 add_dependencies(roco2_core libfirestarter)
-# add_scorep_instrumentation(roco2_core)
 
 add_library(roco2_main STATIC main.cpp)
 target_link_libraries(roco2_main PUBLIC roco2)
-# add_scorep_instrumentation(roco2_main)
 
 add_subdirectory(configurations)
 
