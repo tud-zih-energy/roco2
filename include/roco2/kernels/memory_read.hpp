@@ -23,7 +23,9 @@ namespace kernels
     private:
         virtual void run_kernel(chrono::time_point until) override
         {
+#ifdef HAS_SCOREP
             SCOREP_USER_REGION("memory_read", SCOREP_USER_REGION_TYPE_FUNCTION)
+#endif
 
             auto& my_mem_buffer = roco2::thread_local_memory().mem_buffer;
 

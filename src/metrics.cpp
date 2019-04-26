@@ -1,9 +1,12 @@
+#ifdef HAS_SCOREP
 #ifndef SCOREP_USER_ENABLE
 #define SCOREP_USER_ENABLE
+#endif
 #endif
 
 #include <roco2/scorep.hpp>
 
+#ifdef HAS_SCOREP
 SCOREP_USER_METRIC_GLOBAL(experiment_metric)
 SCOREP_USER_METRIC_GLOBAL(thread_metric)
 SCOREP_USER_METRIC_GLOBAL(frequency_metric)
@@ -11,6 +14,7 @@ SCOREP_USER_METRIC_GLOBAL(ddcm_metric)
 SCOREP_USER_METRIC_GLOBAL(c_state_limit_metric)
 SCOREP_USER_METRIC_GLOBAL(utility_metric)
 SCOREP_USER_METRIC_GLOBAL(shell_metric)
+#endif
 
 #include <roco2/metrics/ddcm.hpp>
 #include <roco2/metrics/experiment.hpp>
@@ -26,8 +30,10 @@ namespace metrics
 {
     void __attribute__((optimize("O0"))) experiment::write(std::uint64_t value)
     {
+#ifdef HAS_SCOREP
         SCOREP_USER_METRIC_UINT64(experiment_metric, value)
-        (void)value;
+#endif
+
         meta::instance().experiment = value;
         // written last, trigger here
         meta::instance().trigger();
@@ -35,34 +41,45 @@ namespace metrics
 
     void __attribute__((optimize("O0"))) frequency::write(std::uint64_t value)
     {
+#ifdef HAS_SCOREP
         SCOREP_USER_METRIC_UINT64(frequency_metric, value)
-        (void)value;
+#endif
+
         meta::instance().frequency = value;
     }
 
     void __attribute__((optimize("O0"))) threads::write(std::uint64_t value)
     {
+#ifdef HAS_SCOREP
         SCOREP_USER_METRIC_UINT64(thread_metric, value)
-        (void)value;
+#endif
+
         meta::instance().threads = value;
     }
 
     void __attribute__((optimize("O0"))) utility::write(std::uint64_t value)
     {
+#ifdef HAS_SCOREP
         SCOREP_USER_METRIC_UINT64(utility_metric, value)
+#endif
+
         (void)value;
     }
 
     void __attribute__((optimize("O0"))) ddcm::write(double value)
     {
+#ifdef HAS_SCOREP
         SCOREP_USER_METRIC_DOUBLE(ddcm_metric, value)
+#endif
+
         (void)value;
     }
 
     void __attribute__((optimize("O0"))) shell::write(std::int64_t value)
     {
+#ifdef HAS_SCOREP
         SCOREP_USER_METRIC_UINT64(shell_metric, value)
-        (void)value;
+#endif
         meta::instance().shell = value;
     }
 

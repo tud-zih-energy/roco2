@@ -2,7 +2,7 @@
 #include <roco2/memory/thread_local.hpp>
 #include <roco2/metrics/utility.hpp>
 
-// #include <roco2/scorep.hpp>
+#include <roco2/scorep.hpp>
 
 #include <cassert>
 
@@ -45,7 +45,9 @@ namespace kernels
 
     void firestarter::run_kernel(roco2::chrono::time_point until)
     {
-        // SCOREP_USER_REGION("firestarter_kernel", SCOREP_USER_REGION_TYPE_FUNCTION)
+#ifdef HAS_SCOREP
+        SCOREP_USER_REGION("firestarter_kernel", SCOREP_USER_REGION_TYPE_FUNCTION)
+#endif
 
         assert(firestarter_function_);
 
@@ -62,7 +64,9 @@ namespace kernels
 
         do
         {
+#ifdef HAS_SCOREP
             // SCOREP_USER_REGION("firestarter_kernel_loop", SCOREP_USER_REGION_TYPE_FUNCTION)
+#endif
             firestarter_function_(&data);
 
             loops++;

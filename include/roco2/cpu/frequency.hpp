@@ -7,7 +7,8 @@
 #include <roco2/log.hpp>
 #include <roco2/metrics/frequency.hpp>
 
-extern "C" {
+extern "C"
+{
 #include <cpufreq.h>
 #include <fastcpufreq.h>
 }
@@ -84,7 +85,10 @@ namespace cpu
             // restore frequency
             try
             {
-                change(start_frequency_);
+                // As it gives problems, we don't restore the old frequency after a run anymore.
+                // We may read some random turbo frequency at startup and not the actual requested
+                // frequency.
+                // change(start_frequency_);
             }
             catch (const std::exception& e)
             {
@@ -167,7 +171,7 @@ namespace cpu
         std::string governor_;
         std::set<unsigned long> valid_frequencies_;
     };
-}
-}
+} // namespace cpu
+} // namespace roco2
 
 #endif // INCLUDE_ROCO2_CPU_FREQUENCY_HPP

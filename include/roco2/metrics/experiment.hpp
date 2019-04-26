@@ -4,7 +4,9 @@
 #include <cstdint>
 #include <roco2/scorep.hpp>
 
+#ifdef HAS_SCOREP
 SCOREP_USER_METRIC_EXTERNAL(experiment_metric)
+#endif
 
 namespace roco2
 {
@@ -15,9 +17,11 @@ namespace metrics
     {
         experiment()
         {
+#ifdef HAS_SCOREP
             SCOREP_USER_METRIC_INIT(experiment_metric, "Experiment", "#",
                                     SCOREP_USER_METRIC_TYPE_UINT64,
                                     SCOREP_USER_METRIC_CONTEXT_GLOBAL)
+#endif
         }
 
     public:

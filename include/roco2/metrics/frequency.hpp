@@ -4,7 +4,9 @@
 #include <cstdint>
 #include <roco2/scorep.hpp>
 
+#ifdef HAS_SCOREP
 SCOREP_USER_METRIC_EXTERNAL(frequency_metric)
+#endif
 
 namespace roco2
 {
@@ -15,9 +17,11 @@ namespace metrics
     {
         frequency()
         {
+#ifdef HAS_SCOREP
             SCOREP_USER_METRIC_INIT(frequency_metric, "Frequency", "Hz",
                                     SCOREP_USER_METRIC_TYPE_UINT64,
                                     SCOREP_USER_METRIC_CONTEXT_GLOBAL)
+#endif
         }
 
     public:

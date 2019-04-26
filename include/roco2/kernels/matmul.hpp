@@ -5,16 +5,15 @@
 #include <roco2/memory/thread_local.hpp>
 #include <roco2/metrics/utility.hpp>
 
-#ifdef USE_MKL
+#if __has_include(<mkl_cblas.h>)
 #include <mkl_cblas.h>
-#endif
-
-#ifdef USE_CBLAS
+#define USE_MKL
+#elif __has_include(<cblas.h>)
 #include <cblas.h>
-#endif
-
-#ifdef USE_ACML
+#define USE_BLAS
+#elif __has_include(<acml.h>)
 #include <acml.h>
+#define USE_ACML
 #endif
 
 #include <chrono>
@@ -32,7 +31,9 @@ namespace kernels
 
         virtual void run_kernel(chrono::time_point until) override
         {
+#ifdef HAS_SCOREP
             SCOREP_USER_REGION("matmul_kernel", SCOREP_USER_REGION_TYPE_FUNCTION)
+#endif
 
             double* A = roco2::thread_local_memory().mat_A.data();
             double* B = roco2::thread_local_memory().mat_B.data();
@@ -44,7 +45,9 @@ namespace kernels
 
             do
             {
+#ifdef HAS_SCOREP
                 // SCOREP_USER_REGION("matmul_kernel_loop", SCOREP_USER_REGION_TYPE_FUNCTION)
+#endif
 
 #if defined USE_MKL || defined USE_CBLAS
                 cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, m, m, m, 1.0, A, m, B, m,

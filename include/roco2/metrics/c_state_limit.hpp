@@ -2,9 +2,11 @@
 #define INCLUDE_ROCO2_METRICS_C_STATE_LIMIT_HPP
 
 #include <cstdint>
-// #include <roco2/scorep.hpp>
+#include <roco2/scorep.hpp>
 
-// SCOREP_USER_METRIC_EXTERNAL(c_state_limit_metric)
+#ifdef HAS_SCOREP
+SCOREP_USER_METRIC_EXTERNAL(c_state_limit_metric)
+#endif
 
 namespace roco2
 {
@@ -15,9 +17,11 @@ namespace metrics
     {
         c_state_limit()
         {
-            // SCOREP_USER_METRIC_INIT(c_state_limit_metric, "c_state_limit", "#",
-            //                         SCOREP_USER_METRIC_TYPE_UINT64,
-            //                         SCOREP_USER_METRIC_CONTEXT_GLOBAL)
+#ifdef HAS_SCOREP
+            SCOREP_USER_METRIC_INIT(c_state_limit_metric, "c_state_limit", "#",
+                                    SCOREP_USER_METRIC_TYPE_UINT64,
+                                    SCOREP_USER_METRIC_CONTEXT_GLOBAL)
+#endif
         }
 
     public:
@@ -35,7 +39,10 @@ namespace metrics
 
         void __attribute__((optimize("O0"))) write(std::uint64_t value)
         {
-            // SCOREP_USER_METRIC_UINT64(c_state_limit_metric, value)
+#ifdef HAS_SCOREP
+            SCOREP_USER_METRIC_UINT64(c_state_limit_metric, value)
+#endif
+
             (void)value;
         }
     };

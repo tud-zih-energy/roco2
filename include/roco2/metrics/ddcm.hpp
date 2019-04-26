@@ -4,7 +4,9 @@
 #include <cstdint>
 #include <roco2/scorep.hpp>
 
+#ifdef HAS_SCOREP
 SCOREP_USER_METRIC_EXTERNAL(ddcm_metric)
+#endif
 
 namespace roco2
 {
@@ -15,9 +17,11 @@ namespace metrics
     {
         ddcm()
         {
+#ifdef HAS_SCOREP
             SCOREP_USER_METRIC_INIT(ddcm_metric, "Dynamic Duty Cycles", "%",
                                     SCOREP_USER_METRIC_TYPE_DOUBLE,
                                     SCOREP_USER_METRIC_CONTEXT_GLOBAL)
+#endif
         }
 
     public:

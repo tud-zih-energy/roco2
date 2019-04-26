@@ -22,8 +22,9 @@ namespace kernels
     private:
         void run_kernel(roco2::chrono::time_point tp) override
         {
+#ifdef HAS_SCOREP
             SCOREP_USER_REGION("busy_wait_kernel", SCOREP_USER_REGION_TYPE_FUNCTION)
-
+#endif
             std::size_t loops = 0;
             // roco2::chrono::busy_wait_until(tp);
             while (std::chrono::high_resolution_clock::now() < tp)

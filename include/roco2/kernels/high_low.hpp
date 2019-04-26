@@ -28,7 +28,9 @@ namespace kernels
     private:
         void run_kernel(roco2::chrono::time_point tp) override
         {
+#ifdef HAS_SCOREP
             SCOREP_USER_REGION("high_low_bs_kernel", SCOREP_USER_REGION_TYPE_FUNCTION)
+#endif
             roco2::chrono::time_point deadline = std::chrono::high_resolution_clock::now();
 
             std::size_t loops = 0;

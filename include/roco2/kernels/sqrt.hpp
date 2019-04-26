@@ -21,7 +21,9 @@ namespace kernels
 
         virtual void run_kernel(chrono::time_point until) override
         {
+#ifdef HAS_SCOREP
             SCOREP_USER_REGION("sqrt_kernel", SCOREP_USER_REGION_TYPE_FUNCTION)
+#endif
 
             auto& comp_A = thread_local_memory().vec_A;
             auto& comp_F = thread_local_memory().vec_F;

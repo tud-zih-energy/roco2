@@ -36,8 +36,9 @@ namespace kernels
             }
             else
             {
+#ifdef HAS_SCOREP
                 SCOREP_USER_REGION("idle_sleep", SCOREP_USER_REGION_TYPE_FUNCTION)
-
+#endif
                 std::this_thread::sleep_until(until);
 
                 roco2::metrics::utility::instance().write(1);

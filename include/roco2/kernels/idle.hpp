@@ -22,7 +22,9 @@ namespace kernels
     private:
         void run_kernel(roco2::chrono::time_point tp) override
         {
+#ifdef HAS_SCOREP
             SCOREP_USER_REGION("idle_sleep", SCOREP_USER_REGION_TYPE_FUNCTION)
+#endif
 
             std::this_thread::sleep_until(tp);
             roco2::metrics::utility::instance().write(1);

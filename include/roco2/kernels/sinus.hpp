@@ -24,7 +24,9 @@ namespace kernels
     private:
         virtual void run_kernel(chrono::time_point until) override
         {
+#ifdef HAS_SCOREP
             SCOREP_USER_REGION("sine_kernel", SCOREP_USER_REGION_TYPE_FUNCTION)
+#endif
 
             double m = 0.0;
 
