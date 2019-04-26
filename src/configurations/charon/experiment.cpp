@@ -55,16 +55,16 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
 
     // ------ EDIT GENERIC SETTINGS BELOW THIS LINE ------
 
-    auto experiment_duration = std::chrono::seconds(1);
+    auto experiment_duration = std::chrono::seconds(10);
 
-    auto freq_list = std::vector<unsigned>{ 2000, /*1600,*/ 1200 };
+    auto freq_list = std::vector<unsigned>{ 2000, 1600, 1200 };
 
-    auto on_list = sub_block_pattern(2*4, 16)/* >>
+    auto on_list = sub_block_pattern(4, 16) >>
                    block_pattern(2, false, triangle_shape::upper) >>
-                   stride_pattern(1, 32) >>
-                   stride_pattern(1, 16) >>
+                   stride_pattern(2, 32) >>
+                   stride_pattern(2, 16) >>
                    stride_pattern(1, 8) >>
-                   stride_pattern(1, 4)*/;
+                   stride_pattern(1, 4);
 
     auto cstate_list = std::vector<roco2::cpu::shell::setting_type>{ { 0, "--only POLL" }, { 1, "C1" }, { 2, "C2" } };
 
@@ -97,9 +97,6 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
     {
         setting([&cstatectl, cstate_setting]() { cstatectl.change(cstate_setting); });
 
-        // do one full idle
-        experiment(idle, roco2::experiments::cpu_sets::all_cpus());
-
         for (const auto& freq : freq_list)
         {
             setting([&freqctl, freq]() { freqctl.change(freq); });
@@ -108,9 +105,9 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
             {
                 experiment(bw, on);
                 experiment(cp, on);
-                experiment(sinus, on);
+//                experiment(sinus, on);
                 experiment(mem_rd, on);
-                experiment(mem_cpy, on);
+//                experiment(mem_cpy, on);
                 experiment(mem_wrt, on);
                 experiment(addpd, on);
                 experiment(mulpd, on);
@@ -118,6 +115,9 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
                 experiment(mm, on);
             }
         }
+
+        // do one full idle
+        experiment(idle, roco2::experiments::cpu_sets::all_cpus());
     }
 
 // ------ EDIT TASK PLAN ABOVE THIS LINE ------

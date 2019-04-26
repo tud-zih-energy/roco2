@@ -27,8 +27,8 @@ namespace kernels
 
         void run(roco2::chrono::time_point until, roco2::experiments::cpu_sets::cpu_set on)
         {
-            roco2::metrics::metric_guard<roco2::metrics::experiment> guard(this->tag());
             roco2::metrics::threads::instance().write(on.num_threads());
+            roco2::metrics::metric_guard<roco2::metrics::experiment> guard(this->tag());
             if (std::find(on.begin(), on.end(), roco2::cpu::info::current_thread()) != on.end())
             {
 
