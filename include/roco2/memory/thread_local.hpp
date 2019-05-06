@@ -75,7 +75,7 @@ namespace detail
 
         // size of mem_buffer equals 160MB
         const static std::size_t firestarter_size =
-            160 * 1024 * 1024 / sizeof(firestarter_buffer[0]);
+            512 * 1024 * 1024 / sizeof(firestarter_buffer[0]);
     };
 }
 

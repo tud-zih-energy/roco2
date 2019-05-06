@@ -1,4 +1,5 @@
 **/
+!ariel/**
 !example/**
 !CMakeLists.txt
 !.gitignore
