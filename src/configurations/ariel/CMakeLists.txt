@@ -1,1 +1,1 @@
-Roco2Configuration(ariel-thomas-diss)
+Roco2Configuration(ariel)
