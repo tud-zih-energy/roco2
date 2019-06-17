@@ -1,7 +1,7 @@
 #include <roco2/initialize.hpp>
 
-#include <roco2/cpu/shell.hpp>
 #include <roco2/cpu/frequency.hpp>
+#include <roco2/cpu/shell.hpp>
 #include <roco2/cpu/topology.hpp>
 
 #include <roco2/memory/numa.hpp>
@@ -49,7 +49,7 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
     roco2::kernels::addpd addpd;
 
     roco2::cpu::frequency freqctl;
-    roco2::cpu::shell cstatectl("elab cstate enable ", "elab cstate enable", "elab cstate enable");
+    roco2::cpu::shell cstatectl("", "elab cstate enable", "elab cstate enable");
 
     roco2::memory::numa_bind_local nbl;
 
@@ -57,16 +57,16 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
 
     auto experiment_duration = std::chrono::seconds(10);
 
-    auto freq_list = std::vector<unsigned>{ 2000, 1600, 1200 };
+    auto freq_list = std::vector<unsigned>{ 2000, 1600, 1200, 2001 };
 
-    auto on_list = sub_block_pattern(4, 16) >>
-                   block_pattern(2, false, triangle_shape::upper) >>
-                   stride_pattern(2, 32) >>
-                   stride_pattern(2, 16) >>
-                   stride_pattern(1, 8) >>
-                   stride_pattern(1, 4);
+    auto on_list = sub_block_pattern(4, 32) >> block_pattern(4, false, triangle_shape::upper) >>
+                   stride_pattern(4, 32) >> stride_pattern(4, 16) >> stride_pattern(2, 8) >>
+                   stride_pattern(2, 4);
 
-    auto cstate_list = std::vector<roco2::cpu::shell::setting_type>{ { 0, "--only POLL" }, { 1, "C1" }, { 2, "C2" } };
+    auto cstate_list =
+        std::vector<roco2::cpu::shell::setting_type>{ { 0, "elab cstate enable --only POLL" },
+                                                      { 1, "elab cstate enable C1" },
+                                                      { 2, "elab cstate enable C2" } };
 
     // ------ EDIT GENERIC SETTINGS ABOVE THIS LINE ------
 
@@ -105,9 +105,9 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
             {
                 experiment(bw, on);
                 experiment(cp, on);
-//                experiment(sinus, on);
+                experiment(sinus, on);
                 experiment(mem_rd, on);
-//                experiment(mem_cpy, on);
+                experiment(mem_cpy, on);
                 experiment(mem_wrt, on);
                 experiment(addpd, on);
                 experiment(mulpd, on);
@@ -120,7 +120,7 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
         experiment(idle, roco2::experiments::cpu_sets::all_cpus());
     }
 
-// ------ EDIT TASK PLAN ABOVE THIS LINE ------
+    // ------ EDIT TASK PLAN ABOVE THIS LINE ------
 
 #pragma omp master
     {

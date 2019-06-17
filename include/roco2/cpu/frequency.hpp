@@ -129,9 +129,24 @@ namespace cpu
          */
         void change(std::uint64_t new_freq)
         {
+            if (must_disable_turbo_)
+            {
+                disable_turbo();
+            }
+            auto metric_freq = new_freq * 1000 * 1000;
             if (valid_frequencies_.count(new_freq) == 0)
             {
-                raise("Try to set an invalid frequency: ", new_freq, "MHz");
+                if (new_freq % 100 == 1)
+                {
+                    new_freq -= 1;
+                    // Enable turbo
+                    must_disable_turbo_ = true;
+                    enable_turbo();
+                }
+                else
+                {
+                    raise("Try to set an invalid frequency: ", new_freq, "MHz");
+                }
             }
 
             int result = fcf_set_frequency(roco2::cpu::info::current_cpu(), new_freq * 1000);
@@ -143,12 +158,48 @@ namespace cpu
             }
             else
             {
-                roco2::metrics::frequency::instance().write(new_freq * 1000 * 1000);
+                roco2::metrics::frequency::instance().write(metric_freq);
             }
 
 #ifdef ROCO2_ASSERTIONS
             verify(new_freq);
 #endif
+        }
+
+        void disable_turbo()
+        {
+#pragma omp barrier
+#pragma omp master
+            {
+                auto ret = std::system("elab frequency nominal");
+                if (ret)
+                {
+                    log::warn() << "turbo shell command failed (" << ret << ") ";
+                }
+                else
+                {
+                    log::info() << "turbo shell command successful: ";
+                }
+            }
+#pragma omp barrier
+        }
+
+        void enable_turbo()
+        {
+#pragma omp barrier
+#pragma omp master
+            {
+                auto ret = std::system("elab frequency turbo");
+                if (ret)
+                {
+                    log::warn() << "turbo shell command failed (" << ret << ") ";
+                }
+                else
+                {
+                    log::info() << "turbo shell command successful: ";
+                }
+            }
+#pragma omp barrier
         }
 
         /**
@@ -170,6 +221,7 @@ namespace cpu
         std::uint64_t start_frequency_;
         std::string governor_;
         std::set<unsigned long> valid_frequencies_;
+        bool must_disable_turbo_ = false;
     };
 } // namespace cpu
 } // namespace roco2
