@@ -85,12 +85,14 @@ namespace metrics
 
     void __attribute__((optimize("O0")))
     meta::write(std::uint64_t experiment, std::uint64_t frequency, std::int64_t shell,
-                std::uint64_t threads)
+                std::uint64_t threads, std::uint64_t op1, std::uint64_t op2)
     {
         (void)experiment;
         (void)frequency;
         (void)shell;
         (void)threads;
+        (void)op1;
+        (void)op2;
     }
 } // namespace metrics
 } // namespace roco2

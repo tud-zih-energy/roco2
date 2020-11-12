@@ -27,8 +27,8 @@ find_package(OpenMP REQUIRED)
 target_link_libraries(roco2 INTERFACE OpenMP::OpenMP_CXX)
 
 # this should also find MKL
-find_package(LAPACK REQUIRED)
-target_link_libraries(roco2 INTERFACE ${LAPACK_LIBRARIES} ${LAPACK_LINKER_FLAGS})
+find_package(BLAS REQUIRED)
+target_link_libraries(roco2 INTERFACE BLAS::BLAS)
 
 find_package(Scorep)
 option(USE_SCOREP "Enable built-in Score-P user instrumentation during build." OFF)

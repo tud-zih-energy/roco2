@@ -732,3 +732,75 @@ uint64_t sqrtpd_kernel(double *buffer, uint64_t elems, uint64_t repeat)
 
     return ret;
 }
+
+
+/*
+Here we will populate ymm0-7 with VALUE, ymm8-ymm15 with VALUE2
+Then we will execute
+ymm[8-15]=ymm[0-7]^ymm[8-15]
+This will be done 4*`passes` (4 due to unrrolling) time
+*/
+void vxor_kernel(uint64_t addr[16], uint64_t passes)
+{
+    __asm__ __volatile__(
+       "mov %%rax,%%r9;"   // addr
+       "mov %%rbx,%%r10;"  // passes
+
+        "vmovdqu64 0(%%r9), %%ymm0;"
+        "vmovdqu64 0(%%r9), %%ymm1;"
+        "vmovdqu64 0(%%r9), %%ymm2;"
+        "vmovdqu64 0(%%r9), %%ymm3;"
+        "vmovdqu64 0(%%r9), %%ymm4;"
+        "vmovdqu64 0(%%r9), %%ymm5;"
+        "vmovdqu64 0(%%r9), %%ymm6;"
+        "vmovdqu64 0(%%r9), %%ymm7;"
+        "vmovdqu64 64(%%r9), %%ymm8;"
+        "vmovdqu64 64(%%r9), %%ymm9;"
+        "vmovdqu64 64(%%r9), %%ymm10;"
+        "vmovdqu64 64(%%r9), %%ymm11;"
+        "vmovdqu64 64(%%r9), %%ymm12;"
+        "vmovdqu64 64(%%r9), %%ymm13;"
+        "vmovdqu64 64(%%r9), %%ymm14;"
+        "vmovdqu64 64(%%r9), %%ymm15;"
+        "jmp _work_loop_avx_store_pi_8;"
+        ".align 64,0x0;"
+        "_work_loop_avx_store_pi_8:"
+        "vxorps %%ymm0, %%ymm8, %%ymm8;"
+        "vxorps %%ymm1, %%ymm9, %%ymm9;"
+        "vxorps %%ymm2, %%ymm10, %%ymm10;"
+        "vxorps %%ymm3, %%ymm11, %%ymm11;"
+        "vxorps %%ymm4, %%ymm12, %%ymm12;"
+        "vxorps %%ymm5, %%ymm13, %%ymm13;"
+        "vxorps %%ymm6, %%ymm14, %%ymm14;"
+        "vxorps %%ymm7, %%ymm15, %%ymm15;"
+        "vxorps %%ymm0, %%ymm8, %%ymm8;"
+        "vxorps %%ymm1, %%ymm9, %%ymm9;"
+        "vxorps %%ymm2, %%ymm10, %%ymm10;"
+        "vxorps %%ymm3, %%ymm11, %%ymm11;"
+        "vxorps %%ymm4, %%ymm12, %%ymm12;"
+        "vxorps %%ymm5, %%ymm13, %%ymm13;"
+        "vxorps %%ymm6, %%ymm14, %%ymm14;"
+        "vxorps %%ymm7, %%ymm15, %%ymm15;"
+        "vxorps %%ymm0, %%ymm8, %%ymm8;"
+        "vxorps %%ymm1, %%ymm9, %%ymm9;"
+        "vxorps %%ymm2, %%ymm10, %%ymm10;"
+        "vxorps %%ymm3, %%ymm11, %%ymm11;"
+        "vxorps %%ymm4, %%ymm12, %%ymm12;"
+        "vxorps %%ymm5, %%ymm13, %%ymm13;"
+        "vxorps %%ymm6, %%ymm14, %%ymm14;"
+        "vxorps %%ymm7, %%ymm15, %%ymm15;"
+        "vxorps %%ymm0, %%ymm8, %%ymm8;"
+        "vxorps %%ymm1, %%ymm9, %%ymm9;"
+        "vxorps %%ymm2, %%ymm10, %%ymm10;"
+        "vxorps %%ymm3, %%ymm11, %%ymm11;"
+        "vxorps %%ymm4, %%ymm12, %%ymm12;"
+        "vxorps %%ymm5, %%ymm13, %%ymm13;"
+        "vxorps %%ymm6, %%ymm14, %%ymm14;"
+        "vxorps %%ymm7, %%ymm15, %%ymm15;"
+        "sub $32,%%r10;"
+        "jnz _work_loop_avx_store_pi_8;"
+        :
+        : "a"(addr), "b" (passes)
+        : "%r8", "%r9", "%r10", "%r11", "%r12", "%r13", "%r14", "%r15", "xmm0", "xmm1", "xmm2", "xmm3", "xmm4", "xmm5", "xmm6", "xmm7", "xmm8", "xmm9", "xmm10", "xmm11", "xmm12", "xmm13", "xmm14", "xmm15", "memory"
+    );
+}
