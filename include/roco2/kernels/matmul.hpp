@@ -49,7 +49,7 @@ namespace kernels
                 // SCOREP_USER_REGION("matmul_kernel_loop", SCOREP_USER_REGION_TYPE_FUNCTION)
 #endif
 
-#if defined USE_MKL || defined USE_CBLAS
+#if defined USE_MKL || defined USE_BLAS
                 cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, m, m, m, 1.0, A, m, B, m,
                             1.0, C, m);
 #else
