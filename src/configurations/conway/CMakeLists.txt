@@ -1,1 +1,1 @@
-Roco2Configuration(ariel)
+Roco2Configuration(conway)
