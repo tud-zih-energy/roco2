@@ -16,11 +16,13 @@ Recommended way to build, provided you are at the **top-level** directory of roc
 ```
 module restore roco2-metricq-ml
 mkdir build && cd build
-SCOREP_WRAPPER_INSTRUMENTER_FLAGS='--user --openmp --thread=omp --nocompiler' SCOREP_WRAPPER=off cmake .. -DCMAKE_C_COMPILER=scorep-gcc -DCMAKE_CXX_COMPILER=scorep-g++ -DUSE_SCOREP=ON -DBUILD_TESTING=OFF -DP9_LONGRUN_METRICQ_SERVER='amqps://USER:PASS@HOST'
+SCOREP_WRAPPER_INSTRUMENTER_FLAGS='--user --openmp --thread=omp --nocompiler' SCOREP_WRAPPER=off cmake .. -DCMAKE_C_COMPILER=scorep-gcc -DCMAKE_CXX_COMPILER=scorep-g++ -DUSE_SCOREP=ON -DBUILD_TESTING=OFF -DENABLE_LOGGING=OFF -DP9_LONGRUN_METRICQ_SERVER='amqps://USER:PASS@HOST'
 make SCOREP_WRAPPER_INSTRUMENTER_FLAGS='--user --openmp --thread=omp --nocompiler'
 ```
 
 Note that you can use `P9_LONGRUN_METRICQ_SERVER` to specify a default metricq server.
+
+Logging should be disabled, as the OMP barriers of the default logger intefered and stalled some processes up to 10s during trial runs.
 
 ## Running
 Running `make` builds an accompanying slurm script, from the build directory it can be launched with:
