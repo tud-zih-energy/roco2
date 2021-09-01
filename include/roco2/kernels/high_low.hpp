@@ -1,6 +1,8 @@
 #ifndef INCLUDE_ROCO2_KERNELS_HIGH_LOW_HPP
 #define INCLUDE_ROCO2_KERNELS_HIGH_LOW_HPP
 
+#include <chrono>
+
 #include <roco2/chrono/util.hpp>
 #include <roco2/kernels/base_kernel.hpp>
 #include <roco2/metrics/utility.hpp>
@@ -47,6 +49,9 @@ namespace kernels
             roco2::chrono::time_point deadline = std::chrono::high_resolution_clock::now();
             // align across all procs
             deadline -= deadline.time_since_epoch() % get_period();
+
+            // record highlow frequency to trace
+            roco2::metrics::frequency::instance().write(std::chrono::seconds(1) / std::chrono::duration_cast<std::chrono::duration<double>>(get_period()));
 
             std::size_t loops = 0;
 
