@@ -1,1 +1,4 @@
-Roco2Configuration(conway)
+if(CpuFreq_FOUND)
+    Roco2Configuration(conway)
+endif()
+

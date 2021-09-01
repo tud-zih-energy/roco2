@@ -6,6 +6,9 @@ SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")
 # Set a default build type if none was specified
 include(cmake/DefaultBuildType.cmake)
 
+# Try to guess which modules should be dis/enabled based on CPU arch
+include(cmake/GuessArchitectureCompatability.cmake)
+
 include(CTest)
 
 # Intialize git submodules if not done already
@@ -28,7 +31,7 @@ target_link_libraries(roco2 INTERFACE OpenMP::OpenMP_CXX)
 
 # this should also find MKL
 find_package(BLAS REQUIRED)
-target_link_libraries(roco2 INTERFACE BLAS::BLAS)
+target_link_libraries(roco2 INTERFACE ${BLAS_LIBRARIES})
 
 find_package(Scorep)
 option(USE_SCOREP "Enable built-in Score-P user instrumentation during build." OFF)
@@ -43,8 +46,13 @@ endif()
 find_package(NUMA REQUIRED)
 target_link_libraries(roco2 INTERFACE NUMA::NUMA)
 
-find_package(CpuFreq REQUIRED)
-target_link_libraries(roco2 INTERFACE Cpufreq::Cpufreq)
+find_package(CpuFreq)
+if (CpuFreq_FOUND)
+    target_link_libraries(roco2 INTERFACE Cpufreq::Cpufreq)
+    target_compile_definitions(roco2 INTERFACE "HAS_CPUFREQ")
+else()
+    message(STATUS "CpuFreq wasn't found")
+endif()
 
 find_package(X86Adapt)
 if (X86Adapt_FOUND)
@@ -54,7 +62,12 @@ else()
     message(STATUS "X86Adapt wasn't found, DDCM not available.")
 endif()
 
-include(cmake/BuildFirestarter.cmake)
+if (USE_FIRESTARTER)
+    include(cmake/BuildFirestarter.cmake)
+    message(STATUS "Building WITH firestarter.")
+else()
+    message(STATUS "Building WITHOUT firestarter.")
+endif()
 
 target_include_directories(roco2 INTERFACE include)
 

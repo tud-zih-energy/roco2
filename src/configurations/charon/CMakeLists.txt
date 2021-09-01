@@ -1,1 +1,3 @@
-Roco2Configuration(charon)
+if(CpuFreq_FOUND)
+    Roco2Configuration(charon)
+endif()
