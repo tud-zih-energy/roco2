@@ -4,6 +4,7 @@
 #include <roco2/chrono/util.hpp>
 #include <roco2/kernels/base_kernel.hpp>
 #include <roco2/metrics/utility.hpp>
+#include <roco2/metrics/frequency.hpp>
 #include <roco2/scorep.hpp>
 
 namespace roco2
@@ -20,6 +21,18 @@ namespace kernels
         {
         }
 
+        roco2::chrono::time_point::duration get_high_time() const {
+            return high_time_;
+        }
+
+        roco2::chrono::time_point::duration get_low_time() const {
+            return low_time_;
+        }
+
+        roco2::chrono::time_point::duration get_period() const {
+            return low_time_ + high_time_;
+        }
+
         virtual experiment_tag tag() const override
         {
             return 12;
@@ -32,6 +45,8 @@ namespace kernels
             SCOREP_USER_REGION("high_low_bs_kernel", SCOREP_USER_REGION_TYPE_FUNCTION)
 #endif
             roco2::chrono::time_point deadline = std::chrono::high_resolution_clock::now();
+            // align across all procs
+            deadline -= deadline.time_since_epoch() % get_period();
 
             std::size_t loops = 0;
 
