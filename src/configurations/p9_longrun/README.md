@@ -9,7 +9,7 @@ To run this experiment as designed, these additional components are required:
 - [Score-P](https://score-p.org/) installed
 - [Score-P ibm powernv plugin](https://github.com/score-p/scorep_plugin_ibmpowernv) in `$LD_LIBRARY_PATH`
 - [Score-P metriq plugin](https://github.com/score-p/scorep_plugin_metricq) in `$LD_LIBRARY_PATH`
-- `module restore roco2-metricq-ml` must restore the used modules for the build; copy it from this directory: `cp taurus_lmod_list ~/.lmod.d/`
+- `module restore roco2-metricq-ml` must restore the used modules for the build; copy it from this directory: `cp taurus_lmod_list ~/.lmod.d/roco2-metricq-ml`
 
 Recommended way to build, provided you are at the **top-level** directory of roco2:
 
