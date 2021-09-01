@@ -57,20 +57,31 @@ namespace kernels
 
             while (true)
             {
-                deadline += high_time_;
-                if (deadline >= tp)
                 {
-                    roco2::chrono::busy_wait_until(tp);
-                    break;
+#ifdef ROCO2_HIGHLOW_INSTRUMENT_PHASES
+                    SCOREP_USER_REGION("high_low_bs_kernel: high phase", SCOREP_USER_REGION_TYPE_FUNCTION)
+#endif
+                    deadline += high_time_;
+                    if (deadline >= tp)
+                    {
+                        roco2::chrono::busy_wait_until(tp);
+                        break;
+                    }
+                    roco2::chrono::busy_wait_until(deadline);
                 }
-                roco2::chrono::busy_wait_until(deadline);
-                deadline += low_time_;
-                if (deadline >= tp)
+
                 {
-                    std::this_thread::sleep_until(tp);
-                    break;
+#ifdef ROCO2_HIGHLOW_INSTRUMENT_PHASES
+                    SCOREP_USER_REGION("high_low_bs_kernel: low phase", SCOREP_USER_REGION_TYPE_FUNCTION)
+#endif
+                    deadline += low_time_;
+                    if (deadline >= tp)
+                    {
+                        std::this_thread::sleep_until(tp);
+                        break;
+                    }
+                    std::this_thread::sleep_until(deadline);
                 }
-                std::this_thread::sleep_until(deadline);
 
                 loops++;
             }
