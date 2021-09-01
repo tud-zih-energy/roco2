@@ -26,6 +26,14 @@ SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
 # einfach den code mit magic macros vollscheissen, bis es geht :o)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_POSIX_C_SOURCE -D_BSD_SOURCE -D_DEFAULT_SOURCE -D_GNU_SOURCE")
 
+# use null sink otherwise
+option(ENABLE_LOGGING "whether logging should be enabled" ON)
+if (ENABLE_LOGGING)
+    target_compile_definitions(roco2 INTERFACE ENABLE_LOGGING)
+else()
+    message(STATUS "silencing all logging")
+endif()
+
 find_package(OpenMP REQUIRED)
 target_link_libraries(roco2 INTERFACE OpenMP::OpenMP_CXX)
 

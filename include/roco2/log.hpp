@@ -9,6 +9,7 @@
 #include <nitro/log/attribute/timestamp.hpp>
 
 #include <nitro/log/sink/stdout_omp.hpp>
+#include <nitro/log/sink/null.hpp>
 
 #include <nitro/log/filter/severity_filter.hpp>
 
@@ -61,7 +62,12 @@ namespace logging
     using filter = nitro::log::filter::severity_filter<Record>;
 } // namespace logging
 
-using log = nitro::log::logger<logging::record, logging::formatter, nitro::log::sink::StdOutOmp,
+using log = nitro::log::logger<logging::record, logging::formatter,
+#ifdef ENABLE_LOGGING
+      nitro::log::sink::StdOutOmp,
+#else
+      nitro::log::sink::Null,
+#endif
                                logging::filter>;
 } // namespace roco2
 
