@@ -2,6 +2,8 @@
 Experiment to put system under **many levels** of **stable** load.
 Achieved by running 1,2,3...44 cores (4 threads each) with one of 7 kernels for 60s each.
 
+Will run for approx. 5h total.
+
 ## Building
 To run this experiment as designed, these additional components are required:
 - [Score-P](https://score-p.org/) installed
