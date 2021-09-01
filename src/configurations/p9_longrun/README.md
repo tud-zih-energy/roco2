@@ -35,6 +35,5 @@ The script will try to guess the correct metricq settings for the variables `$SC
 Just set them before invoking the script with `sbatch`, your settings will be kept.
 
 Please note that SLURM sometimes has hiccups and requires additional parameters, especially `--hint=multithread` may be required manually.
-The default maximum runtime is set to 1:59:59, keep in mind that only roughly 25-50% of runtime are alotted to the experiment, the remainder is Score-P postprocessing.
 
 Obviously the script is highly dependent on your local deployment, so adjustments may be required.
