@@ -10,8 +10,6 @@ The file `src/configurations/example/experiment.cpp` contains all configuration,
 which is necessary to adapt to your machine. For simple adjustments, you can edit the section ```EDIT GENERIC SETTINGS```. This section comprises the variables representing the duration of one experiment, a list of all tested frequencies and T-states, and the patterns of the active hardware threads. These four knobs determine the length of one execution.
 For more fine grained changes to the execution, you can edit the section ```EDIT TASK PLAN```. This section determines the order of execution for the different workload kernels.
 
-For further details, refer to the [Wiki](https://github.com/tud-zih-energy/roco2/wiki).
-
 ## Dependencies
 - Mandatory
     - A compiler with C++14 and OpenMP support
@@ -22,6 +20,8 @@ For further details, refer to the [Wiki](https://github.com/tud-zih-energy/roco2
     - [Score-P](http://www.vi-hps.org/projects/score-p)
     - libcpufreq
     - [X86Adapt](https://github.com/tud-zih-energy/x86_adapt)
+
+Note that some configurations might have stronger requirements.
 
 The build will try to detect the presence or absence of these dependencies.
 To enforce their usage set the corresponding options, e.g. by executing `ccmake .` in the build directory.
@@ -37,6 +37,11 @@ mkdir build && cd build
 cmake ..
 make
 ```
+
+Some configurations have additional, more strict building instructions.
+Please refer to their respective readmes:
+[P9 Highlow](src/configurations/p9_highlow/README.md)
+| [P9 Longrun](src/configurations/p9_longrun/README.md)
 
 ## Acknowledgments
 
