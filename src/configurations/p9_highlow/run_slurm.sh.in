@@ -26,7 +26,7 @@ export SCOREP_ENABLE_PROFILING=0
 export SCOREP_TOTAL_MEMORY=4095M
 
 export SCOREP_METRIC_PLUGINS=ibmpowernv_plugin
-export SCOREP_METRIC_IBMPOWERNV_PLUGIN='occ_power_system,occ_power_system_from_energy'
+export SCOREP_METRIC_IBMPOWERNV_PLUGIN='*'
 export SCOREP_METRIC_IBMPOWERNV_PLUGIN_INTERVAL=40ms
 
 echo "Checking env..."
