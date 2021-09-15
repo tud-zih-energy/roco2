@@ -6,7 +6,6 @@
 #include <roco2/chrono/util.hpp>
 #include <roco2/kernels/base_kernel.hpp>
 #include <roco2/metrics/utility.hpp>
-#include <roco2/metrics/frequency.hpp>
 #include <roco2/scorep.hpp>
 
 namespace roco2
@@ -23,15 +22,15 @@ namespace kernels
         {
         }
 
-        roco2::chrono::time_point::duration get_high_time() const {
+        roco2::chrono::time_point::duration high_time() const {
             return high_time_;
         }
 
-        roco2::chrono::time_point::duration get_low_time() const {
+        roco2::chrono::time_point::duration low_time() const {
             return low_time_;
         }
 
-        roco2::chrono::time_point::duration get_period() const {
+        roco2::chrono::time_point::duration period() const {
             return low_time_ + high_time_;
         }
 
@@ -48,10 +47,10 @@ namespace kernels
 #endif
             roco2::chrono::time_point deadline = std::chrono::high_resolution_clock::now();
             // align across all procs
-            deadline -= deadline.time_since_epoch() % get_period();
+            deadline -= deadline.time_since_epoch() % period();
 
-            // record highlow frequency to trace
-            roco2::metrics::frequency::instance().write(std::chrono::seconds(1) / std::chrono::duration_cast<std::chrono::duration<double>>(get_period()));
+            // record frequency of highlow pattern to trace
+            roco2::metrics::utility::instance().write(std::chrono::seconds(1) / std::chrono::duration_cast<std::chrono::duration<double>>(period()));
 
             std::size_t loops = 0;
 
@@ -85,8 +84,6 @@ namespace kernels
 
                 loops++;
             }
-
-            roco2::metrics::utility::instance().write(loops);
         }
 
         roco2::chrono::time_point::duration high_time_;
