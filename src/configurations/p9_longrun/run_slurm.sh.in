@@ -1,0 +1,63 @@
+#!/bin/bash
+#SBATCH --hint=multithread
+#SBATCH --time=07:59:59
+#SBATCH --ntasks=1
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=176
+#SBATCH --exclusive
+#SBATCH --partition=ml
+#SBATCH --gres=gpu:0
+#SBATCH --output=roco2_%j.out
+#SBATCH --job-name=p9_longrun
+
+export HOST=$(hostname)
+echo "running on $HOST"
+module restore roco2-metricq-ml
+
+echo "it is $(date) $(date +%s)"
+
+echo -n "Checking if kernel param has been successfully set (should be 0): "
+sysctl kernel.perf_event_paranoid
+
+export PDU_METRICS=$(grep -E '^'$HOST ${CMAKE_CURRENT_BINARY_DIR}/taurus_metrics_by_node | sed -Ee 's/^[^[:blank:]]+ //')
+
+export GOMP_CPU_AFFINITY=0-175
+#export OMP_PLACES=0:176:1
+#export OMP_PROC_BIND=TRUE
+
+export SCOREP_ENABLE_TRACING=1
+export SCOREP_ENABLE_PROFILING=0
+export SCOREP_TOTAL_MEMORY=4095M
+
+export SCOREP_METRIC_PLUGINS=ibmpowernv_plugin,metricq_plugin
+export SCOREP_METRIC_IBMPOWERNV_PLUGIN='*'
+export SCOREP_METRIC_IBMPOWERNV_PLUGIN_INTERVAL=1s
+export SCOREP_METRIC_IBMPOWERNV_PLUGIN_SOCKETS=2
+
+test -n "$SCOREP_METRIC_METRICQ_PLUGIN" || export SCOREP_METRIC_METRICQ_PLUGIN="taurus."$HOST".power,taurus."$HOST".ps0.power,taurus."$HOST".ps1.power,"$PDU_METRICS
+test -n "$SCOREP_METRIC_METRICQ_PLUGIN_SERVER" || export SCOREP_METRIC_METRICQ_PLUGIN_SERVER="${P9_LONGRUN_METRICQ_SERVER}"
+export SCOREP_METRIC_METRICQ_PLUGIN_TIMEOUT=8h
+
+echo "Checking env..."
+echo "  GOMP_CPU_AFFINITY                        = $GOMP_CPU_AFFINITY"
+echo "  OMP_PLACES                               = $OMP_PLACES"
+echo "  OMP_PROC_BIND                            = $OMP_PROC_BIND"
+echo "  SCOREP_ENABLE_TRACING                    = $SCOREP_ENABLE_TRACING"
+echo "  SCOREP_ENABLE_PROFILING                  = $SCOREP_ENABLE_PROFILING"
+echo "  SCOREP_TOTAL_MEMORY                      = $SCOREP_TOTAL_MEMORY"
+echo "  SCOREP_METRIC_PLUGINS                    = $SCOREP_METRIC_PLUGINS"
+echo "  SCOREP_METRIC_IBMPOWERNV_PLUGIN          = $SCOREP_METRIC_IBMPOWERNV_PLUGIN"
+echo "  SCOREP_METRIC_IBMPOWERNV_PLUGIN_INTERVAL = $SCOREP_METRIC_IBMPOWERNV_PLUGIN_INTERVAL"
+echo "  SCOREP_METRIC_IBMPOWERNV_PLUGIN_SOCKETS  = $SCOREP_METRIC_IBMPOWERNV_PLUGIN_SOCKETS"
+echo "  SCOREP_METRIC_METRICQ_PLUGIN             = $SCOREP_METRIC_METRICQ_PLUGIN"
+echo "  SCOREP_METRIC_METRICQ_PLUGIN_SERVER      = $SCOREP_METRIC_METRICQ_PLUGIN_SERVER"
+echo "  SCOREP_METRIC_METRICQ_PLUGIN_TIMEOUT     = $SCOREP_METRIC_METRICQ_PLUGIN_TIMEOUT"
+echo ""
+
+echo "it is $(date) $(date +%s)"
+
+echo "Executing roco2..."
+${CMAKE_CURRENT_BINARY_DIR}/roco2_p9_longrun
+
+echo "it is $(date) $(date +%s)"
+echo "Done."

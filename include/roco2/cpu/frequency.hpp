@@ -1,6 +1,10 @@
 #ifndef INCLUDE_ROCO2_CPU_FREQUENCY_HPP
 #define INCLUDE_ROCO2_CPU_FREQUENCY_HPP
 
+#ifndef HAS_CPUFREQ
+#error CpuFreq is required to include this file
+#endif // HAS_CPUFREQ
+
 #include <roco2/cpu/info.hpp>
 #include <roco2/cpu/topology.hpp>
 #include <roco2/exception.hpp>

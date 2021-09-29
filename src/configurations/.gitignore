@@ -1,5 +1,7 @@
 **/
 !ariel/**
 !example/**
+!p9_highlow/
+!p9_longrun/
 !CMakeLists.txt
 !.gitignore

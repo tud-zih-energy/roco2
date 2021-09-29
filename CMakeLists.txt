@@ -6,6 +6,9 @@ SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")
 # Set a default build type if none was specified
 include(cmake/DefaultBuildType.cmake)
 
+# Try to guess which modules should be dis/enabled based on CPU arch
+include(cmake/GuessArchitectureCompatability.cmake)
+
 include(CTest)
 
 # Intialize git submodules if not done already
@@ -23,19 +26,27 @@ SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
 # einfach den code mit magic macros vollscheissen, bis es geht :o)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_POSIX_C_SOURCE -D_BSD_SOURCE -D_DEFAULT_SOURCE -D_GNU_SOURCE")
 
+# use null sink otherwise
+option(ENABLE_LOGGING "whether logging should be enabled" ON)
+if (ENABLE_LOGGING)
+    target_compile_definitions(roco2 INTERFACE ENABLE_LOGGING)
+else()
+    message(STATUS "silencing all logging")
+endif()
+
 find_package(OpenMP REQUIRED)
 target_link_libraries(roco2 INTERFACE OpenMP::OpenMP_CXX)
 
 # this should also find MKL
 find_package(BLAS REQUIRED)
-target_link_libraries(roco2 INTERFACE BLAS::BLAS)
+target_link_libraries(roco2 INTERFACE ${BLAS_LIBRARIES})
 
-find_package(Scorep)
 option(USE_SCOREP "Enable built-in Score-P user instrumentation during build." OFF)
-if(Scorep_FOUND AND USE_SCOREP)
+if (USE_SCOREP)
+    message(STATUS "Building WITH Score-P user instrumentation. Make sure you have set up the Score-P compiler wrapper as Compiler!")
+    find_package(Scorep REQUIRED)
     target_link_libraries(roco2 INTERFACE Scorep::Plugin)
     target_compile_definitions(roco2 INTERFACE HAS_SCOREP)
-    message(STATUS "Building WITH Score-P user instrumentation. Make sure you have set up the Score-P compiler wrapper as Compiler!")
 else()
     message(STATUS "Building WITHOUT Score-P user instrumentation.")
 endif()
@@ -43,8 +54,13 @@ endif()
 find_package(NUMA REQUIRED)
 target_link_libraries(roco2 INTERFACE NUMA::NUMA)
 
-find_package(CpuFreq REQUIRED)
-target_link_libraries(roco2 INTERFACE Cpufreq::Cpufreq)
+find_package(CpuFreq)
+if (CpuFreq_FOUND)
+    target_link_libraries(roco2 INTERFACE Cpufreq::Cpufreq)
+    target_compile_definitions(roco2 INTERFACE "HAS_CPUFREQ")
+else()
+    message(STATUS "CpuFreq wasn't found")
+endif()
 
 find_package(X86Adapt)
 if (X86Adapt_FOUND)
@@ -54,7 +70,12 @@ else()
     message(STATUS "X86Adapt wasn't found, DDCM not available.")
 endif()
 
-include(cmake/BuildFirestarter.cmake)
+if (USE_FIRESTARTER)
+    include(cmake/BuildFirestarter.cmake)
+    message(STATUS "Building WITH firestarter.")
+else()
+    message(STATUS "Building WITHOUT firestarter.")
+endif()
 
 target_include_directories(roco2 INTERFACE include)
 
@@ -75,10 +96,8 @@ macro(Roco2Configuration CONF )
 
     target_link_libraries(
         roco2_${CONF}
-        # fastcpufreq
-        # ${FIRESTARTER_LIBRARIES}
-        roco2_core
         roco2_main
+        roco2_core
     )
 
     install(TARGETS roco2_${CONF} RUNTIME DESTINATION bin)

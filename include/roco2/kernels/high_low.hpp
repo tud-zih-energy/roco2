@@ -1,6 +1,8 @@
 #ifndef INCLUDE_ROCO2_KERNELS_HIGH_LOW_HPP
 #define INCLUDE_ROCO2_KERNELS_HIGH_LOW_HPP
 
+#include <chrono>
+
 #include <roco2/chrono/util.hpp>
 #include <roco2/kernels/base_kernel.hpp>
 #include <roco2/metrics/utility.hpp>
@@ -20,6 +22,18 @@ namespace kernels
         {
         }
 
+        roco2::chrono::time_point::duration high_time() const {
+            return high_time_;
+        }
+
+        roco2::chrono::time_point::duration low_time() const {
+            return low_time_;
+        }
+
+        roco2::chrono::time_point::duration period() const {
+            return low_time_ + high_time_;
+        }
+
         virtual experiment_tag tag() const override
         {
             return 12;
@@ -32,30 +46,44 @@ namespace kernels
             SCOREP_USER_REGION("high_low_bs_kernel", SCOREP_USER_REGION_TYPE_FUNCTION)
 #endif
             roco2::chrono::time_point deadline = std::chrono::high_resolution_clock::now();
+            // align across all procs
+            deadline -= deadline.time_since_epoch() % period();
+
+            // record frequency of highlow pattern to trace
+            roco2::metrics::utility::instance().write(std::chrono::seconds(1) / std::chrono::duration_cast<std::chrono::duration<double>>(period()));
 
             std::size_t loops = 0;
 
             while (true)
             {
-                deadline += high_time_;
-                if (deadline >= tp)
                 {
-                    roco2::chrono::busy_wait_until(tp);
-                    break;
+#ifdef ROCO2_HIGHLOW_INSTRUMENT_PHASES
+                    SCOREP_USER_REGION("high_low_bs_kernel: high phase", SCOREP_USER_REGION_TYPE_FUNCTION)
+#endif
+                    deadline += high_time_;
+                    if (deadline >= tp)
+                    {
+                        roco2::chrono::busy_wait_until(tp);
+                        break;
+                    }
+                    roco2::chrono::busy_wait_until(deadline);
                 }
-                roco2::chrono::busy_wait_until(deadline);
-                deadline += low_time_;
-                if (deadline >= tp)
+
                 {
-                    std::this_thread::sleep_until(tp);
-                    break;
+#ifdef ROCO2_HIGHLOW_INSTRUMENT_PHASES
+                    SCOREP_USER_REGION("high_low_bs_kernel: low phase", SCOREP_USER_REGION_TYPE_FUNCTION)
+#endif
+                    deadline += low_time_;
+                    if (deadline >= tp)
+                    {
+                        std::this_thread::sleep_until(tp);
+                        break;
+                    }
+                    std::this_thread::sleep_until(deadline);
                 }
-                std::this_thread::sleep_until(deadline);
 
                 loops++;
             }
-
-            roco2::metrics::utility::instance().write(loops);
         }
 
         roco2::chrono::time_point::duration high_time_;
