@@ -1,4 +1,6 @@
 add_subdirectory(ariel)
+add_subdirectory(artemis)
+add_subdirectory(diana)
 add_subdirectory(charon)
 add_subdirectory(charon_turbo)
 add_subdirectory(example)

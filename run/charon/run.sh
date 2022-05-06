@@ -7,6 +7,8 @@ module load mkl
 
 export SCOREP_METRIC_METRICQ_PLUGIN_TIMEOUT=24h
 export LO2S_OUTPUT_LINK=/home/tilsche/traces/roco2/charon/lo2s_trace_latest
+export SCOREP_METRIC_METRICQ_PLUGIN="elab.charon.power,elab.ariel.s0.package.power.100Hz,elab.ariel.s1.package.power.100Hz,elab.ariel.s0.dram.power.100Hz,elab.ariel.s1.dram.power.100Hz"
+
 
 cd /home/tilsche/roco2/build/src/configurations/charon
 

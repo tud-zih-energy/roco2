@@ -57,9 +57,9 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
 
     auto experiment_duration = std::chrono::seconds(10);
 
-    auto freq_list = std::vector<unsigned>{ 2000, 1600, 1200, 2001 };
+    auto freq_list = std::vector<unsigned>{ 2000, 1200, 2001 };
 
-    auto on_list = sub_block_pattern(4, 32) >> block_pattern(4, false, triangle_shape::upper) >>
+    auto on_list = sub_block_pattern(8, 32) >> block_pattern(4, false, triangle_shape::upper) >>
                    stride_pattern(4, 32) >> stride_pattern(4, 16) >> stride_pattern(2, 8) >>
                    stride_pattern(2, 4);
 
@@ -93,31 +93,29 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
 
     // ------ EDIT TASK PLAN BELOW THIS LINE ------
 
-    for (const auto& cstate_setting : cstate_list)
+    for (const auto& freq : freq_list)
     {
-        setting([&cstatectl, cstate_setting]() { cstatectl.change(cstate_setting); });
-
-        for (const auto& freq : freq_list)
+        setting([&freqctl, freq]() { freqctl.change(freq); });
+        for (const auto& cstate_setting : cstate_list)
         {
-            setting([&freqctl, freq]() { freqctl.change(freq); });
-
-            for (const auto& on : on_list)
-            {
-                experiment(bw, on);
-                experiment(cp, on);
-                experiment(sinus, on);
-                experiment(mem_rd, on);
-                experiment(mem_cpy, on);
-                experiment(mem_wrt, on);
-                experiment(addpd, on);
-                experiment(mulpd, on);
-                experiment(squareroot, on);
-                experiment(mm, on);
-            }
+            setting([&cstatectl, cstate_setting]() { cstatectl.change(cstate_setting); });
+            // do one full idle
+            experiment(idle, roco2::experiments::cpu_sets::all_cpus());
         }
 
-        // do one full idle
-        experiment(idle, roco2::experiments::cpu_sets::all_cpus());
+        for (const auto& on : on_list)
+        {
+            experiment(bw, on);
+            experiment(cp, on);
+            experiment(sinus, on);
+            experiment(mem_rd, on);
+            experiment(mem_cpy, on);
+            experiment(mem_wrt, on);
+            experiment(addpd, on);
+            experiment(mulpd, on);
+            experiment(squareroot, on);
+            experiment(mm, on);
+        }
     }
 
     // ------ EDIT TASK PLAN ABOVE THIS LINE ------
