@@ -1,0 +1,23 @@
+#!/bin/sh
+
+module purge --force
+module load toolchain/system scorep scorep_metricq
+
+echo "it is $(date)"
+
+export GOMP_CPU_AFFINITY=0-23
+
+export SCOREP_ENABLE_TRACING=1
+export SCOREP_ENABLE_PROFILING=0
+export SCOREP_TOTAL_MEMORY=4095M
+
+echo "environment variables:"
+echo "GOMP_CPU_AFFINITY       = $GOMP_CPU_AFFINITY"
+echo "SCOREP_ENABLE_TRACING   = $SCOREP_ENABLE_TRACING"
+echo "SCOREP_ENABLE_PROFILING = $SCOREP_ENABLE_PROFILING"
+echo "SCOREP_TOTAL_MEMORY     = $SCOREP_TOTAL_MEMORY"
+echo "SCOREP_METRIC_PLUGINS   = $SCOREP_METRIC_PLUGINS"
+
+echo "executing test..."
+${CMAKE_CURRENT_BINARY_DIR}/roco2_kallisto
+echo "done"

@@ -24,7 +24,6 @@
 #include <roco2/kernels/memory_read.hpp>
 #include <roco2/kernels/memory_write.hpp>
 #include <roco2/kernels/mulpd.hpp>
-#include <roco2/kernels/sinus.hpp>
 #include <roco2/kernels/sqrt.hpp>
 
 #include <roco2/task/experiment_task.hpp>
@@ -134,7 +133,6 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
 {
     roco2::kernels::busy_wait bw;
     roco2::kernels::compute cp;
-    roco2::kernels::sinus sinus;
     roco2::kernels::memory_read<> mem_rd;
     roco2::kernels::memory_copy<> mem_cpy;
     roco2::kernels::memory_write<> mem_wrt;
@@ -156,8 +154,7 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
     // note that both P- and E-cores report **the same** available frequencies
     auto freq_list = std::vector<unsigned>{ 3201, 3200, 2500, 1700, 800 };
 
-    //auto on_list = get_alderlake_patterns();
-    auto on_list = {roco2::experiments::cpu_sets::all_cpus()};
+    auto on_list = get_alderlake_patterns();
 
     // ------ EDIT GENERIC SETTINGS ABOVE THIS LINE ------
 
@@ -165,7 +162,7 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
 
 #pragma omp master
     {
-        //roco2::log::info() << "Experiment list has " << on_list.size() << " entries: " << on_list;
+        roco2::log::info() << "Experiment list has " << on_list.size() << " entries: " << on_list;
     }
 
 #pragma omp barrier
@@ -197,7 +194,6 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
         {
             experiment(bw, on);
             experiment(cp, on);
-            // experiment(sinus, on);
             experiment(mem_rd, on);
             experiment(mem_cpy, on);
             experiment(mem_wrt, on);
