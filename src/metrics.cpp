@@ -63,7 +63,7 @@ namespace metrics
         SCOREP_USER_METRIC_UINT64(utility_metric, value)
 #endif
 
-        (void)value;
+        meta::instance().utility = value;
     }
 
     void __attribute__((optimize("O0"))) ddcm::write(double value)
@@ -85,12 +85,13 @@ namespace metrics
 
     void __attribute__((optimize("O0")))
     meta::write(std::uint64_t experiment, std::uint64_t frequency, std::int64_t shell,
-                std::uint64_t threads, std::uint64_t op1, std::uint64_t op2)
+                std::uint64_t threads, std::uint64_t utility, std::uint64_t op1, std::uint64_t op2)
     {
         (void)experiment;
         (void)frequency;
         (void)shell;
         (void)threads;
+        (void)utility;
         (void)op1;
         (void)op2;
     }
