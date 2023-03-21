@@ -8,6 +8,8 @@
 
 #include <roco2/memory/numa.hpp>
 
+#include <roco2/metrics/meta.hpp>
+
 #include <roco2/chrono/chrono.hpp>
 #include <roco2/log.hpp>
 
@@ -187,12 +189,14 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
 
     // ------ EDIT GENERIC SETTINGS BELOW THIS LINE ------
 
-    auto experiment_duration = std::chrono::seconds(10);
+    auto experiment_duration = std::chrono::seconds(60);
 
     // copied from: /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies
     // note that both P- and E-cores report **the same** available frequencies
     // actual E-Core nominal is 2400
-    auto freq_list = std::vector<unsigned>{ 3201, 3200, 2400, 1600, 800 };
+    //auto freq_list = std::vector<unsigned>{ 3201, 3200, 2400, 1600, 800 };
+    //auto freq_list = std::vector<unsigned>{ 3201, 3200, 800 };
+    auto freq_list = std::vector<unsigned>{ 3201 };
 
     auto on_list = get_alderlake_patterns();
 
@@ -233,21 +237,24 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
         {
             auto active_pcores = count_active_pcores(on);
             auto active_ecores = count_active_ecores(on);
+            if (active_pcores < 6) {
+                continue;
+            }
             setting(
                 [active_pcores, active_ecores]()
                 {
-                    roco2::metrics::meta::instance().op1 = active.pcores;
+                    roco2::metrics::meta::instance().op1 = active_pcores;
                     roco2::metrics::meta::instance().op2 = active_ecores;
-                })
+                });
 
-                experiment(bw, on);
+//            experiment(bw, on);
             experiment(cp, on);
-            experiment(mem_rd, on);
-            experiment(mem_cpy, on);
-            experiment(mem_wrt, on);
-            experiment(addpd, on);
-            experiment(mulpd, on);
-            experiment(squareroot, on);
+//            experiment(mem_rd, on);
+//            experiment(mem_cpy, on);
+//            experiment(mem_wrt, on);
+//            experiment(addpd, on);
+//            experiment(mulpd, on);
+//            experiment(squareroot, on);
             experiment(mm, on);
         }
     }

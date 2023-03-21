@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 source /etc/profile.d/lmod.sh
 source /etc/profile.d/zih-a-lmod.sh
@@ -14,7 +14,7 @@ export OPENBLAS_NUM_THREADS=1
 export SCOREP_ENABLE_TRACING=1
 export SCOREP_ENABLE_PROFILING=0
 export SCOREP_TOTAL_MEMORY=4095M
-export SCOREP_METRIC_METRICQ_PLUGIN_TIMEOUT=12h
+export SCOREP_METRIC_METRICQ_PLUGIN_TIMEOUT=48h
 
 echo "environment variables:"
 echo "  GOMP_CPU_AFFINITY                    = $GOMP_CPU_AFFINITY"
@@ -29,11 +29,16 @@ echo "executing test..."
 ulimit -n 999999
 elab frequency turbo
 
-perf probe -d roco2:metrics
+sudo perf probe -d roco2:metrics
 
-sudo perf probe -x ./roco2_kallisto roco2:metrics=_ZN5roco27metrics4meta5writeEmmlmmmm experiment frequency shell threads utility || exit 1
+ROCO2=../../build_kallisto/src/configurations/kallisto/roco2_kallisto
 
-GOMP_CPU_AFFINITY=0-23 lo2s \
--X -t roco2:metrics \
--- /home/s9242987/roco2-kallisto/build/src/configurations/kallisto/roco2_kallisto
+sudo perf probe -x $ROCO2 roco2:metrics=_ZN5roco27metrics4meta5writeEmmlmmmm experiment frequency shell threads utility op1 op2 || exit 1
+
+# getting probe permissions sucks
+sudo -E env "LD_LIBRARY_PATH=$LD_LIBRARY_PATH" $(which lo2s) \
+-X -S -t roco2:metrics \
+-E msr/aperf/ -E msr/mperf/ \
+-- $ROCO2
+sudo chown -R $USER lo2s_trace_*
 echo "done"
