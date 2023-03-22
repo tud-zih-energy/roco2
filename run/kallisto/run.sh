@@ -32,13 +32,16 @@ elab frequency turbo
 sudo perf probe -d roco2:metrics
 
 ROCO2=../../build_kallisto/src/configurations/kallisto/roco2_kallisto
+LO2S=$HOME/lo2s/BUILD/lo2s
 
 sudo perf probe -x $ROCO2 roco2:metrics=_ZN5roco27metrics4meta5writeEmmlmmmm experiment frequency shell threads utility op1 op2 || exit 1
 
+
 # getting probe permissions sucks
-sudo -E env "LD_LIBRARY_PATH=$LD_LIBRARY_PATH" $(which lo2s) \
--X -S -t roco2:metrics \
--E msr/aperf/ -E msr/mperf/ \
+sudo -E env "LD_LIBRARY_PATH=$LD_LIBRARY_PATH" $LO2S \
+-X -S -t roco2:metrics -i 100 \
+-e cpu-clock -c 32000000 \
+-E msr/aperf/ -E msr/mperf/ --metric-frequency 10 \
 -- $ROCO2
 sudo chown -R $USER lo2s_trace_*
 echo "done"
