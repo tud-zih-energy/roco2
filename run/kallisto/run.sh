@@ -39,9 +39,11 @@ sudo perf probe -x $ROCO2 roco2:metrics=_ZN5roco27metrics4meta5writeEmmlmmmm exp
 
 # getting probe permissions sucks
 sudo -E env "LD_LIBRARY_PATH=$LD_LIBRARY_PATH" $LO2S \
--X -S -t roco2:metrics -i 100 \
+-A -X -S -t roco2:metrics -i 100 \
 -e cpu-clock -c 32000000 \
--E msr/aperf/ -E msr/mperf/ --metric-frequency 10 \
+--userspace-metric-event uncore_clock/clockticks/ \
+--userspace-metric-event r228 --userspace-metric-event r428 --userspace-metric-event r828 --userspace-metric-event r128 \
+-E msr/aperf/ -E instructions --metric-frequency 10 \
 -- $ROCO2
 sudo chown -R $USER lo2s_trace_*
 echo "done"
