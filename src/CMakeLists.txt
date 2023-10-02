@@ -6,6 +6,13 @@ list(APPEND roco2_core_SOURCES
     c_state_limit.c
     )
 
+if (CpuFreq_FOUND) 
+    message(STATUS "Building WITH cpufreq.")
+    list(APPEND roco2_core_SOURCES fastcpufreq.c)
+else()
+    message(STATUS "Building WITHOUT cpufreq.")
+endif()
+
 if (USE_ASM_KERNELS)
     message(STATUS "Building WITH asm kernels.")
     list(APPEND roco2_core_SOURCES asm_kernels.c)
