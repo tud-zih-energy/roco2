@@ -2,6 +2,7 @@
 
 #include <roco2/chrono/chrono.hpp>
 #include <roco2/log.hpp>
+#include <roco2/multinode/mpi.hpp>
 
 #include <nitro/broken_options/parser.hpp>
 
@@ -14,7 +15,15 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only);
 
 int main(int argc, char** argv)
 {
+    // Init MPI and first synchronize
+    roco2::multinode::Mpi mpi(&argc, &argv);
+    
     auto starting_point = roco2::chrono::now();
+
+    // We synchronize the first starting point and rely on NTP time sync.
+    // All subsequent synchronization points are relativ to this one.
+    // That's only in the order of milliseconds, but it's fine. Right?
+    starting_point = mpi.synchronize(starting_point);
 
     roco2::log::info() << "Starting initialize at: " << starting_point.time_since_epoch().count();
 

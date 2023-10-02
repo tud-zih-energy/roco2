@@ -1,6 +1,7 @@
 #ifndef INCLUDE_ROCO2_CPU_TOPOLOGY_HPP
 #define INCLUDE_ROCO2_CPU_TOPOLOGY_HPP
 
+#include <mpi.h>
 #include <roco2/exception.hpp>
 #include <roco2/log.hpp>
 
@@ -51,7 +52,7 @@ namespace cpu
 
             return res;
         }
-    }
+    } // namespace detail
 
     class topology
     {
@@ -111,6 +112,32 @@ namespace cpu
             }
         }
 
+        void read_nodes()
+        {
+            // You're not running on a homogeneous system? Well, may god be
+            // kind on your soul, because I won't. 
+            
+            int size;
+            MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+
+            std::vector<uint32_t> sockets;
+
+            for(auto& socket : sockets_) {
+                sockets.push_back(socket.id);
+            }
+
+            node n;
+            n.sockets = sockets;
+
+            for (int id = 0; id < size; id++)
+            {
+                n.id = id;
+                // yes, I'm not ashamed of myself.
+                nodes_.push_back(n);
+            }
+        }
+
     public:
         struct core
         {
@@ -155,11 +182,18 @@ namespace cpu
             std::vector<uint32_t> cores;
         };
 
+        struct node
+        {
+            uint32_t id;
+            std::vector<uint32_t> sockets;
+        };
+
     private:
         topology()
         {
             read_cores();
             read_sockets();
+            read_nodes();
 
             if (static_cast<int>(num_cores()) != omp_get_max_threads())
             {
@@ -210,6 +244,22 @@ namespace cpu
             raise("Given core ", id, " doesn't exists.");
         }
 
+        const node& get_node(std::uint32_t id) const
+        {
+            for (auto& n : nodes_)
+            {
+                if (n.id == id)
+                    return n;
+            }
+
+            raise("Given core ", id, " doesn't exists.");
+        }
+
+        std::size_t num_nodes() const
+        {
+            return nodes_.size();
+        }
+
         std::size_t num_cores() const
         {
             return cores_.size();
@@ -235,15 +285,21 @@ namespace cpu
             return sockets_;
         }
 
-        friend class core;
+        const std::vector<node>& nodes() const
+        {
+            return nodes_;
+        }
+
+        friend struct core;
 
     private:
         std::vector<core> cores_;
         std::vector<socket> sockets_;
+        std::vector<node> nodes_;
 
         const static std::string base_path;
     };
-}
-}
+} // namespace cpu
+} // namespace roco2
 
 #endif // INCLUDE_ROCO2_CPU_TOPOLOGY_HPP

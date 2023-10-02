@@ -37,6 +37,9 @@ endif()
 find_package(OpenMP REQUIRED)
 target_link_libraries(roco2 INTERFACE OpenMP::OpenMP_CXX)
 
+find_package(MPI)
+target_link_libraries(roco2 INTERFACE MPI::MPI_C)
+
 # this should also find MKL
 find_package(BLAS REQUIRED)
 target_link_libraries(roco2 INTERFACE ${BLAS_LIBRARIES})
@@ -69,6 +72,7 @@ if (X86Adapt_FOUND)
 else()
     message(STATUS "X86Adapt wasn't found, DDCM not available.")
 endif()
+
 
 if (USE_FIRESTARTER)
     include(cmake/BuildFirestarter.cmake)
