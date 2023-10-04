@@ -1,3 +1,4 @@
+add_subdirectory(alatar)
 add_subdirectory(ariel)
 add_subdirectory(charon)
 add_subdirectory(charon_turbo)

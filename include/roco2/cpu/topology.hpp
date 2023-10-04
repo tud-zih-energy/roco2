@@ -1,11 +1,13 @@
 #ifndef INCLUDE_ROCO2_CPU_TOPOLOGY_HPP
 #define INCLUDE_ROCO2_CPU_TOPOLOGY_HPP
 
-#include <mpi.h>
 #include <roco2/exception.hpp>
 #include <roco2/log.hpp>
 
 #include <omp.h>
+
+#define OMPI_SKIP_MPICXX
+#include <mpi.h>
 
 #include <cstdint>
 #include <fstream>
