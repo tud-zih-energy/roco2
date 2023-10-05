@@ -24,9 +24,15 @@ namespace multinode
         {
             auto buffer = tp.time_since_epoch().count();
 
-            MPI_Bcast(&buffer, 1, MPI_INT64_T, 0, MPI_COMM_WORLD);
+            /* MPI_Bcast(&buffer, 1, MPI_INT64_T, 0, MPI_COMM_WORLD); */
+
+            MPI_Allreduce(MPI_IN_PLACE, &buffer, 1, MPI_UINT64_T, MPI_MAX, MPI_COMM_WORLD);
 
             return roco2::chrono::time_point(roco2::chrono::duration(buffer));
+        }
+
+        void barrier() {
+            MPI_Barrier(MPI_COMM_WORLD);
         }
 
         ~Mpi()

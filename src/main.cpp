@@ -17,13 +17,8 @@ int main(int argc, char** argv)
 {
     // Init MPI and first synchronize
     roco2::multinode::Mpi mpi(&argc, &argv);
-    
-    auto starting_point = roco2::chrono::now();
 
-    // We synchronize the first starting point and rely on NTP time sync.
-    // All subsequent synchronization points are relativ to this one.
-    // That's only in the order of milliseconds, but it's fine. Right?
-    starting_point = mpi.synchronize(starting_point);
+    auto starting_point = roco2::chrono::now();
 
     roco2::log::info() << "Starting initialize at: " << starting_point.time_since_epoch().count();
 
@@ -75,15 +70,25 @@ int main(int argc, char** argv)
 
     roco2::initialize::master();
 
-    // Throwing exceptions out of a parellel regions doesn't seem smart.
+    // Throwing exceptions out of a parallel regions doesn't seem smart.
     // Therefore we have this boolean flag here.
     bool exception_happend = false;
 
 #pragma omp parallel default(shared) shared(starting_point, exception_happend)                     \
     firstprivate(eta_only)
     {
+// OPARI2 seems to be rather slow while init, so we need this
+#pragma omp barrier
+
         try
         {
+            mpi.barrier();
+
+            // We synchronize the first starting point and rely on NTP time sync.
+            // All subsequent synchronization points are relativ to this one.
+            // That's only in the order of milliseconds, but it's fine. Right?
+            starting_point = mpi.synchronize(roco2::chrono::now());
+
             run_experiments(starting_point, eta_only);
         }
         catch (std::exception& e)
