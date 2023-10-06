@@ -85,6 +85,8 @@ public:
 
         log::debug() << "Waiting for nice starting point";
 
+#pragma omp barrier
+
 #pragma omp master
             {
                 // time sync is hard. Initialization takes different amount of time
