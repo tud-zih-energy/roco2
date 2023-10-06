@@ -46,7 +46,7 @@ public:
 #endif
     }
 
-    static roco2::chrono::time_point thread(roco2::chrono::time_point start_point,
+    static roco2::chrono::time_point thread(roco2::chrono::time_point& start_point,
                                             roco2::chrono::duration experiment_duration,
                                             bool eta_only)
     {
