@@ -20,7 +20,7 @@ namespace multinode
             MPI_Barrier(MPI_COMM_WORLD);
         }
 
-        roco2::chrono::time_point synchronize(roco2::chrono::time_point tp)
+        static roco2::chrono::time_point synchronize(roco2::chrono::time_point tp)
         {
             auto buffer = tp.time_since_epoch().count();
 
@@ -31,7 +31,7 @@ namespace multinode
             return roco2::chrono::time_point(roco2::chrono::duration(buffer));
         }
 
-        void barrier() {
+        static void barrier() {
             MPI_Barrier(MPI_COMM_WORLD);
         }
 

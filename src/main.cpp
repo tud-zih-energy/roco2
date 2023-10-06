@@ -82,19 +82,6 @@ int main(int argc, char** argv)
 
         try
         {
-
-#pragma omp master
-            {
-                // time sync is hard. Initialization takes different amount of time
-                // on each rank. So hopefully, when we're here, all is initialized.
-                // so we put a barrier here to wait for everyone else.
-                mpi.barrier();
-
-                // .. and then take a new time measurement and share that across
-                // everybody
-                starting_point = mpi.synchronize(roco2::chrono::now());
-            }
-
             run_experiments(starting_point, eta_only);
         }
         catch (std::exception& e)

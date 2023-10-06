@@ -11,6 +11,7 @@
 #include <roco2/metrics/threads.hpp>
 #include <roco2/metrics/utility.hpp>
 #include <roco2/scorep.hpp>
+#include <roco2/multinode/mpi.hpp>
 
 #include <omp.h>
 
@@ -53,7 +54,6 @@ public:
         SCOREP_USER_REGION("thread_init", SCOREP_USER_REGION_TYPE_FUNCTION)
 #endif
 
-
         bool is_master = false;
 
 #pragma omp master
@@ -84,6 +84,18 @@ public:
         log::debug() << "Allocated and first touched memory";
 
         log::debug() << "Waiting for nice starting point";
+
+#pragma omp master
+            {
+                // time sync is hard. Initialization takes different amount of time
+                // on each rank. So hopefully, when we're here, all is initialized.
+                // so we put a barrier here to wait for everyone else.
+                multinode::Mpi::barrier();
+
+                // .. and then take a new time measurement and share that across
+                // everybody
+                start_point = multinode::Mpi::synchronize(roco2::chrono::now());
+            }
 
         auto then = start_point + experiment_duration;
 
