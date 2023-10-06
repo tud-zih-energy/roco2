@@ -77,17 +77,25 @@ int main(int argc, char** argv)
 #pragma omp parallel default(shared) shared(starting_point, exception_happend)                     \
     firstprivate(eta_only)
     {
-// OPARI2 seems to be rather slow while init, so we need this
+        // OPARI2 seems to be rather slow while init, so we need this
 #pragma omp barrier
 
         try
         {
-            mpi.barrier();
 
-            // We synchronize the first starting point and rely on NTP time sync.
-            // All subsequent synchronization points are relativ to this one.
-            // That's only in the order of milliseconds, but it's fine. Right?
-            starting_point = mpi.synchronize(roco2::chrono::now());
+#pragma omp master
+            {
+                // time sync is hard. Initialization takes different amount of time
+                // on each rank. So hopefully, when we're here, all is initialized.
+                // so we put a barrier here to wait for everyone else.
+                mpi.barrier();
+
+                // .. and then take a new time measurement and share that across
+                // everybody
+                starting_point = mpi.synchronize(roco2::chrono::now());
+            }
+
+#pragma omp barrier
 
             run_experiments(starting_point, eta_only);
         }
