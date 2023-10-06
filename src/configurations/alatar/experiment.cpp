@@ -62,8 +62,6 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
         roco2::log::info() << "Experiment list has " << on_list.size() << " entries: " << on_list;
     }
 
-#pragma omp barrier
-
     auto experiment_startpoint =
         roco2::initialize::thread(starting_point, experiment_duration, eta_only);
 

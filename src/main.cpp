@@ -95,8 +95,6 @@ int main(int argc, char** argv)
                 starting_point = mpi.synchronize(roco2::chrono::now());
             }
 
-#pragma omp barrier
-
             run_experiments(starting_point, eta_only);
         }
         catch (std::exception& e)

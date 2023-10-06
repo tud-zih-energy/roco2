@@ -10,7 +10,7 @@
 #include <roco2/metrics/experiment.hpp>
 #include <roco2/metrics/threads.hpp>
 #include <roco2/metrics/utility.hpp>
-// #include <roco2/scorep.hpp>
+#include <roco2/scorep.hpp>
 
 #include <omp.h>
 
@@ -49,9 +49,10 @@ public:
                                             roco2::chrono::duration experiment_duration,
                                             bool eta_only)
     {
-        // SCOREP_USER_REGION("thread_init", SCOREP_USER_REGION_TYPE_FUNCTION)
+#ifdef HAS_SCOREP
+        SCOREP_USER_REGION("thread_init", SCOREP_USER_REGION_TYPE_FUNCTION)
+#endif
 
-#pragma omp barrier
 
         bool is_master = false;
 
