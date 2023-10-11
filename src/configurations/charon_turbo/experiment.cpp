@@ -34,7 +34,7 @@
 
 using namespace roco2::experiments::patterns;
 
-void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
+void run_experiments(roco2::chrono::time_point& starting_point, bool eta_only)
 {
     roco2::kernels::busy_wait bw;
     roco2::kernels::compute cp;

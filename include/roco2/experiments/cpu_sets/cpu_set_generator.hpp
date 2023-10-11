@@ -1,5 +1,4 @@
-#ifndef INCLUDE_ROCO2_PATTERNS_CPU_SET_GENERATOR_HPP
-#define INCLUDE_ROCO2_PATTERNS_CPU_SET_GENERATOR_HPP
+#pragma once
 
 #include <roco2/experiments/cpu_sets/cpu_set.hpp>
 #include <roco2/log.hpp>
@@ -65,8 +64,6 @@ namespace experiments
         {
             return make_cpu_range(0, cpu::topology::instance().num_cores() - 1);
         }
-    }
-}
-}
-
-#endif // INCLUDE_ROCO2_PATTERNS_CPU_SET_GENERATOR_HPP
+    } // namespace cpu_sets
+} // namespace experiments
+} // namespace roco2

@@ -1,5 +1,4 @@
-#ifndef INCLUDE_ROCO2_PATTERNS_CPU_RANGE_HPP
-#define INCLUDE_ROCO2_PATTERNS_CPU_RANGE_HPP
+#pragma once
 
 #include <omp.h>
 
@@ -145,8 +144,6 @@ namespace experiments
 
             return a;
         }
-    }
-}
-}
-
-#endif // INCLUDE_ROCO2_PATTERNS_CPU_RANGE_HPP
+    } // namespace cpu_sets
+} // namespace experiments
+} // namespace roco2

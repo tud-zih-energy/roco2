@@ -32,7 +32,7 @@ std::uint64_t operand(int hw)
     return op >> (64 - hw);
 }
 
-void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
+void run_experiments(roco2::chrono::time_point& starting_point, bool eta_only)
 {
     roco2::kernels::vxor vxor;
     roco2::kernels::idle idle;

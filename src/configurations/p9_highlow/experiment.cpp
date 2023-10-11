@@ -77,7 +77,7 @@ std::vector<double> get_frequencies(const std::string& freq_spec) {
     return freqs;
 }
 
-void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
+void run_experiments(roco2::chrono::time_point& starting_point, bool eta_only)
 {
     std::vector<roco2::kernels::high_low_bs> kernels;
 

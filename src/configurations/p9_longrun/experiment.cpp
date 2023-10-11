@@ -34,7 +34,7 @@ using namespace roco2::experiments::patterns;
 namespace kernels = roco2::kernels;
 
 // runs all suitable kernels
-void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
+void run_experiments(roco2::chrono::time_point& starting_point, bool eta_only)
 {
     std::vector<std::shared_ptr<kernels::base_kernel>> kernel_list = {
         std::make_shared<kernels::busy_wait>(),

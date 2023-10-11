@@ -26,7 +26,9 @@ class initialize
 public:
     static void master()
     {
-        // SCOREP_USER_REGION("master_init", SCOREP_USER_REGION_TYPE_FUNCTION)
+#ifdef HAS_SCOREP
+        SCOREP_USER_REGION("master_init", SCOREP_USER_REGION_TYPE_FUNCTION)
+#endif
 
         // initialize the cpu topology structure
         auto& topology = roco2::cpu::topology::instance();
