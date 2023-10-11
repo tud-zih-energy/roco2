@@ -101,9 +101,10 @@ public:
                 start_point = multinode::Mpi::synchronize(roco2::chrono::now());
             }
 
-        auto then = start_point + experiment_duration;
 
 #pragma omp barrier
+
+        auto then = start_point + experiment_duration;
 
         auto now = roco2::chrono::now();
 
