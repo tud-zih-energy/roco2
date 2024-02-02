@@ -194,9 +194,7 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
     // copied from: /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies
     // note that both P- and E-cores report **the same** available frequencies
     // actual E-Core nominal is 2400
-    auto freq_list = std::vector<unsigned>{ 3201, 3200, 2400, 1600, 800 };
-    //auto freq_list = std::vector<unsigned>{ 3201, 3200, 800 };
-    //auto freq_list = std::vector<unsigned>{ 3201 };
+    auto freq_list = std::vector<unsigned>{ 3201, 3200, 2500, 1700, 800 };
 
     auto on_list = get_alderlake_patterns();
 
