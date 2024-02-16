@@ -11,7 +11,7 @@ AlwaysBreakTemplateDeclarations: true
 AlwaysBreakBeforeMultilineStrings: false
 BinPackParameters: true
 BreakBeforeBinaryOperators: false
-BreakBeforeBraces: Allman
+BreakBeforeBraces: Attach
 BreakBeforeTernaryOperators: false
 BreakConstructorInitializersBeforeComma: false
 ColumnLimit:     100
@@ -47,9 +47,12 @@ UseTab:          Never
 
 SpacesInParentheses: false
 SpacesInAngles:  false
-SpaceInEmptyParentheses: false
 SpacesInCStyleCastParentheses: false
 SpaceAfterControlStatementKeyword: true
-SpaceBeforeAssignmentOperators: true
 ContinuationIndentWidth: 4
+
+InsertNewlineAtEOF: true
+KeepEmptyLinesAtTheStartOfBlocks: false
+EmptyLineBeforeAccessModifier: Always
+SeparateDefinitionBlocks: Always
 ...

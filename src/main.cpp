@@ -2,7 +2,10 @@
 
 #include <roco2/chrono/chrono.hpp>
 #include <roco2/log.hpp>
+
+#ifdef ENABLE_MULTINODE
 #include <roco2/multinode/mpi.hpp>
+#endif
 
 #include <nitro/broken_options/parser.hpp>
 
@@ -11,12 +14,14 @@
 
 #include <omp.h>
 
-void run_experiments(roco2::chrono::time_point starting_point, bool eta_only);
+void run_experiments(roco2::chrono::time_point& starting_point, bool eta_only);
 
 int main(int argc, char** argv)
 {
+#ifdef ENABLE_MULTINODE
     // Init MPI and first synchronize
     roco2::multinode::Mpi mpi(&argc, &argv);
+#endif
 
     auto starting_point = roco2::chrono::now();
 

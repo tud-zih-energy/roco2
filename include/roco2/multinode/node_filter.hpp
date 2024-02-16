@@ -1,7 +1,8 @@
 #pragma once
 
-#include "nitro/env/hostname.hpp"
 #include <roco2/experiments/cpu_sets/cpu_set.hpp>
+
+#include <nitro/env/hostname.hpp>
 
 #include <set>
 #include <string>

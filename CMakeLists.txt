@@ -37,8 +37,13 @@ endif()
 find_package(OpenMP REQUIRED)
 target_link_libraries(roco2 INTERFACE OpenMP::OpenMP_CXX)
 
-find_package(MPI)
-target_link_libraries(roco2 INTERFACE MPI::MPI_C)
+option(ENABLE_MULTINODE "use MPI to synchronize between many nodes" OFF)
+
+if (ENABLE_MULTINODE)
+    find_package(MPI REQUIRED)
+    target_link_libraries(roco2 INTERFACE MPI::MPI_C)
+    target_compile_definitions(roco2 INTERFACE ENABLE_MULTINODE)
+endif()
 
 # this should also find MKL
 find_package(BLAS REQUIRED)
@@ -93,7 +98,7 @@ endif()
 target_compile_definitions(roco2 INTERFACE REGONLY)
 
 add_subdirectory(lib/nitro)
-target_link_libraries(roco2 INTERFACE Nitro::log)
+target_link_libraries(roco2 INTERFACE Nitro::log Nitro::env)
 
 macro(Roco2Configuration CONF )
     add_executable(roco2_${CONF} experiment.cpp)

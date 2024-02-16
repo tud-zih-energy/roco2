@@ -10,13 +10,16 @@
 #include <roco2/metrics/experiment.hpp>
 #include <roco2/metrics/threads.hpp>
 #include <roco2/metrics/utility.hpp>
-#include <roco2/multinode/mpi.hpp>
 #include <roco2/scorep.hpp>
 
-#include <omp.h>
+#ifdef ENABLE_MULTINODE
+#include <roco2/multinode/mpi.hpp>
+#endif
 
 #include <thread>
 #include <vector>
+
+#include <omp.h>
 
 namespace roco2
 {
@@ -87,8 +90,8 @@ public:
 
         log::debug() << "Waiting for nice starting point";
 
+#ifdef ENABLE_MULTINODE
 #pragma omp barrier
-
 #pragma omp master
         {
             // time sync is hard. Initialization takes different amount of time
@@ -100,6 +103,7 @@ public:
             // everybody
             start_point = multinode::Mpi::synchronize(roco2::chrono::now());
         }
+#endif
 
 #pragma omp barrier
 

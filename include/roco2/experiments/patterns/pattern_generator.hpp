@@ -7,29 +7,19 @@
 #include <iostream>
 #include <vector>
 
-namespace roco2
-{
-namespace experiments
-{
+namespace roco2 {
+namespace experiments {
 
-    namespace patterns
-    {
+    namespace patterns {
 
-        enum class triangle_shape
-        {
-            none,
-            upper,
-            lower
-        };
+        enum class triangle_shape { none, upper, lower };
 
         inline pattern block_pattern(std::size_t block_size, bool reverse = false,
-                                     triangle_shape shape = triangle_shape::none)
-        {
-            if (omp_get_num_threads() % block_size != 0)
-            {
-                roco2::log::warn() << omp_get_num_threads()
-                                   << " threads cannot be divided into blocks of size "
-                                   << block_size;
+                                     triangle_shape shape = triangle_shape::none) {
+            if (omp_get_num_threads() % block_size != 0) {
+                roco2::log::warn()
+                    << omp_get_num_threads() << " threads cannot be divided into blocks of size "
+                    << block_size;
             }
 
             auto num_blocks = omp_get_num_threads() / block_size;
@@ -39,12 +29,10 @@ namespace experiments
             // Fun fact: I've seen this pearl of overly clever code, but I couldn't change it.
             //           Future me, have fun proving once again, this is correct ¯\_(ツ)_/¯
             std::size_t diff = reverse ? -1 : 1;
-            for (std::size_t nth = reverse ? num_blocks - 1 : 0; nth < num_blocks; nth += diff)
-            {
+            for (std::size_t nth = reverse ? num_blocks - 1 : 0; nth < num_blocks; nth += diff) {
                 auto start = nth * block_size;
 
-                switch (shape)
-                {
+                switch (shape) {
                 case triangle_shape::none:
                     result.append(cpu_sets::make_cpu_range(start, start + block_size - 1));
                     break;
@@ -61,8 +49,7 @@ namespace experiments
             return result;
         }
 
-        inline pattern sub_block_on(uint32_t socket, std::size_t block_size = 4)
-        {
+        inline pattern sub_block_on(uint32_t socket, std::size_t block_size = 4) {
             auto cores = roco2::cpu::topology::instance().get_socket(socket).cores;
             auto num_cores = cores.size();
 
@@ -70,8 +57,7 @@ namespace experiments
 
             cpu_sets::cpu_set range;
 
-            for (std::size_t i = 0; i < num_cores; i += block_size)
-            {
+            for (std::size_t i = 0; i < num_cores; i += block_size) {
                 for (std::size_t j = i; j < i + block_size; ++j)
                     range.add(cores[j]);
 
@@ -81,20 +67,17 @@ namespace experiments
             return result;
         }
 
-        inline pattern sub_block_on_all(std::size_t block_size = 4)
-        {
+        inline pattern sub_block_on_all(std::size_t block_size = 4) {
             pattern result;
 
-            for (auto& socket : roco2::cpu::topology::instance().sockets())
-            {
+            for (auto& socket : roco2::cpu::topology::instance().sockets()) {
                 result = result >> sub_block_on(socket.id, block_size);
             }
 
             return result;
         }
 
-        inline pattern block_on_all()
-        {
+        inline pattern block_on_all() {
             auto num_cores = roco2::cpu::topology::instance().num_per_socket();
 
             std::size_t block_size = 4;
@@ -105,29 +88,25 @@ namespace experiments
             return block_pattern(block_size, false, triangle_shape::upper);
         }
 
-        inline pattern sub_block_pattern(std::size_t block_size, std::size_t stride_size)
-        {
-            if (omp_get_num_threads() % block_size != 0)
-            {
-                roco2::log::warn() << omp_get_num_threads()
-                                   << " threads cannot be divided into blocks of size "
-                                   << block_size;
+        inline pattern sub_block_pattern(std::size_t block_size, std::size_t stride_size) {
+            if (omp_get_num_threads() % block_size != 0) {
+                roco2::log::warn()
+                    << omp_get_num_threads() << " threads cannot be divided into blocks of size "
+                    << block_size;
             }
 
-            if (omp_get_num_threads() % stride_size != 0)
-            {
-                roco2::log::warn() << omp_get_num_threads()
-                                   << " threads cannot be divided into strides of size "
-                                   << stride_size;
+            if (omp_get_num_threads() % stride_size != 0) {
+                roco2::log::warn()
+                    << omp_get_num_threads() << " threads cannot be divided into strides of size "
+                    << stride_size;
             }
 
             auto num_strides = omp_get_num_threads() / stride_size;
 
-            if (stride_size % block_size != 0)
-            {
-                roco2::log::warn() << omp_get_num_threads()
-                                   << " threads cannot be divided into stride blocks of size "
-                                   << block_size;
+            if (stride_size % block_size != 0) {
+                roco2::log::warn()
+                    << omp_get_num_threads()
+                    << " threads cannot be divided into stride blocks of size " << block_size;
             }
 
             // blocks per stride
@@ -135,12 +114,10 @@ namespace experiments
 
             pattern result;
 
-            for (std::size_t nth_stride = 0; nth_stride < num_strides; nth_stride++)
-            {
+            for (std::size_t nth_stride = 0; nth_stride < num_strides; nth_stride++) {
                 cpu_sets::cpu_set range;
 
-                for (std::size_t nth = 0; nth < num_blocks; ++nth)
-                {
+                for (std::size_t nth = 0; nth < num_blocks; ++nth) {
                     auto start = nth_stride * stride_size + nth * block_size;
 
                     range = range | cpu_sets::make_cpu_range(start, start + block_size - 1);
@@ -152,29 +129,25 @@ namespace experiments
             return result;
         }
 
-        inline pattern stride_pattern(std::size_t block_size, std::size_t stride_size)
-        {
-            if (omp_get_num_threads() % block_size != 0)
-            {
-                roco2::log::warn() << omp_get_num_threads()
-                                   << " threads cannot be divided into blocks of size "
-                                   << block_size;
+        inline pattern stride_pattern(std::size_t block_size, std::size_t stride_size) {
+            if (omp_get_num_threads() % block_size != 0) {
+                roco2::log::warn()
+                    << omp_get_num_threads() << " threads cannot be divided into blocks of size "
+                    << block_size;
             }
 
-            if (omp_get_num_threads() % stride_size != 0)
-            {
-                roco2::log::warn() << omp_get_num_threads()
-                                   << " threads cannot be divided into strides of size "
-                                   << stride_size;
+            if (omp_get_num_threads() % stride_size != 0) {
+                roco2::log::warn()
+                    << omp_get_num_threads() << " threads cannot be divided into strides of size "
+                    << stride_size;
             }
 
             auto num_strides = omp_get_num_threads() / stride_size;
 
-            if (stride_size % block_size != 0)
-            {
-                roco2::log::warn() << omp_get_num_threads()
-                                   << " threads cannot be divided into stride blocks of size "
-                                   << block_size;
+            if (stride_size % block_size != 0) {
+                roco2::log::warn()
+                    << omp_get_num_threads()
+                    << " threads cannot be divided into stride blocks of size " << block_size;
             }
 
             auto num_experiments = stride_size / block_size;
@@ -183,10 +156,8 @@ namespace experiments
 
             cpu_sets::cpu_set range;
 
-            for (std::size_t nth = 0; nth < num_experiments; ++nth)
-            {
-                for (std::size_t nth_stride = 0; nth_stride < num_strides; nth_stride++)
-                {
+            for (std::size_t nth = 0; nth < num_experiments; ++nth) {
+                for (std::size_t nth_stride = 0; nth_stride < num_strides; nth_stride++) {
                     auto start = nth * block_size + nth_stride * stride_size;
 
                     range = range | cpu_sets::make_cpu_range(start, start + block_size - 1);
@@ -197,8 +168,24 @@ namespace experiments
 
             return result;
         }
-    }
-}
-}
+
+        inline pattern triangle_pattern(int from, int to, int step = 1) {
+            pattern result;
+
+            assert(from <= to);
+
+            auto size = to - from;
+
+            assert(size % step == 0);
+
+            for (int i = 0; i <= size; i += step) {
+                result.append(cpu_sets::make_cpu_range(from, from + (i + 1) * step - 1));
+            }
+
+            return result;
+        }
+    } // namespace patterns
+} // namespace experiments
+} // namespace roco2
 
 #endif // INCLUDE_ROCO2_PATTERNS_PATTERN_GENERATOR_HPP
