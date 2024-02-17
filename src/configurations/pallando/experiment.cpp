@@ -1,3 +1,4 @@
+#include "roco2/experiments/cpu_sets/cpu_set.hpp"
 #include <roco2/initialize.hpp>
 
 #include <roco2/cpu/topology.hpp>
@@ -22,6 +23,28 @@
 
 using namespace roco2::experiments::patterns;
 
+pattern socket_shuffle() {
+    pattern result;
+
+    auto id = 0;
+
+    roco2::experiments::cpu_sets::cpu_set cpus;
+
+    for (int i = 0; i < 104; i++) {
+        cpus.add(id);
+
+        if (id + 52 > 103) {
+            id = id - 51;
+        } else {
+            id += 52;
+        }
+
+        result.append(cpus);
+    }
+
+    return result;
+}
+
 void run_experiments(roco2::chrono::time_point& starting_point, bool eta_only) {
     roco2::kernels::matmul mm;
     roco2::kernels::idle idle;
@@ -35,9 +58,9 @@ void run_experiments(roco2::chrono::time_point& starting_point, bool eta_only) {
     assert(omp_get_num_threads() == 104);
 
     auto on_list =
-        block_pattern(1, false, triangle_shape::upper) >> stride_pattern(1, 52) >>
-        (triangle_pattern(0, 12) && triangle_pattern(13, 25) && triangle_pattern(26, 38) &&
-         triangle_pattern(39, 51)) >>
+        block_pattern(1, false, triangle_shape::upper) >> socket_shuffle() >>
+        stride_pattern(1, 52) >> (triangle_pattern(0, 12) && triangle_pattern(13, 25) &&
+                                  triangle_pattern(26, 38) && triangle_pattern(39, 51)) >>
         stride_pattern(1, 13) >> (triangle_pattern(0, 12) && triangle_pattern(13, 25)) >>
         (triangle_pattern(0, 12) && triangle_pattern(13, 25) && triangle_pattern(27, 39)) >>
         (triangle_pattern(0, 12) && triangle_pattern(13, 25) && triangle_pattern(27, 39) &&
