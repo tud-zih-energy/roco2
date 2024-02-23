@@ -81,7 +81,7 @@ void run_experiments(roco2::chrono::time_point& starting_point, bool eta_only) {
         (triangle_pattern(0, 12) && triangle_pattern(13, 25) && triangle_pattern(52, 64)) >>
         (triangle_pattern(0, 12) && triangle_pattern(13, 25) && triangle_pattern(52, 64) &&
          triangle_pattern(65, 77));
-    /* on_list = on_list >> random_pattern(14, 64, 5); */
+    on_list = on_list >> random_pattern(14, 64, 5);
 
     // ------ EDIT GENERIC SETTINGS ABOVE THIS LINE ------
 
