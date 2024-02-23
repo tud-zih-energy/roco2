@@ -1,4 +1,5 @@
 #include "roco2/experiments/cpu_sets/cpu_set.hpp"
+#include "roco2/experiments/cpu_sets/cpu_set_generator.hpp"
 #include <roco2/initialize.hpp>
 
 #include <roco2/cpu/topology.hpp>
@@ -45,6 +46,18 @@ pattern socket_shuffle() {
     return result;
 }
 
+pattern random_pattern(int from, int to, int count) {
+    pattern result;
+
+    for (int i = from; i <= to; i++) {
+        for (int j = 0; j < count; j++) {
+            result.append(roco2::experiments::cpu_sets::make_random(i));
+        }
+    }
+
+    return result;
+}
+
 void run_experiments(roco2::chrono::time_point& starting_point, bool eta_only) {
     roco2::kernels::matmul mm;
     roco2::kernels::idle idle;
@@ -68,6 +81,7 @@ void run_experiments(roco2::chrono::time_point& starting_point, bool eta_only) {
         (triangle_pattern(0, 12) && triangle_pattern(13, 25) && triangle_pattern(52, 64)) >>
         (triangle_pattern(0, 12) && triangle_pattern(13, 25) && triangle_pattern(52, 64) &&
          triangle_pattern(65, 77));
+    /* on_list = on_list >> random_pattern(14, 64, 5); */
 
     // ------ EDIT GENERIC SETTINGS ABOVE THIS LINE ------
 

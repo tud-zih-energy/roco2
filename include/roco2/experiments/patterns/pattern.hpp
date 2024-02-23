@@ -45,7 +45,7 @@ namespace experiments {
             }
 
             const cpu_sets::cpu_set& operator[](int i) const {
-                assert(i < size());
+                assert(i < int(size()));
 
                 return data[i];
             }
@@ -111,16 +111,16 @@ namespace experiments {
             pattern result;
 
             int i;
-            for (i = 0; i < std::min(a.size(), b.size()); i++) {
+            for (i = 0; i < int(std::min(a.size(), b.size())); i++) {
                 result.append(a[i] | b[i]);
             }
 
-            if (a.size() > i) {
-                for (; i < a.size(); i++) {
+            if (int(a.size()) > i) {
+                for (; i < int(a.size()); i++) {
                     result.append(a[i]);
                 }
             } else {
-                for (; i < b.size(); i++) {
+                for (; i < int(b.size()); i++) {
                     result.append(b[i]);
                 }
             }

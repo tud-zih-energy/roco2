@@ -1,12 +1,16 @@
 #pragma once
 
+#include <omp.h>
 #include <roco2/experiments/cpu_sets/cpu_set.hpp>
 #include <roco2/log.hpp>
 
 #include <roco2/cpu/topology.hpp>
 
+#include <random>
 #include <set>
 #include <vector>
+
+#include <cassert>
 
 namespace roco2
 {
@@ -63,6 +67,32 @@ namespace experiments
         inline cpu_set all_cpus()
         {
             return make_cpu_range(0, cpu::topology::instance().num_cores() - 1);
+        }
+
+        inline cpu_set make_random(int num_active, int seed = 31415) {
+            static std::mt19937 rng(seed);
+            static std::uniform_int_distribution<> dist(0, omp_get_num_threads() - 1);
+
+            if (num_active == omp_get_num_threads()) {
+                return all_cpus();
+            }
+
+            assert(num_active < omp_get_num_threads());
+
+            cpu_set result;
+
+            while(static_cast<int>(result.num_threads()) < num_active) {
+                auto cpu = dist(rng);
+
+                if (result.contains(cpu))
+                    continue;
+
+                result.add(cpu);
+            }
+
+            assert(static_cast<int>(result.num_threads()) == num_active);
+
+            return result;
         }
     } // namespace cpu_sets
 } // namespace experiments
