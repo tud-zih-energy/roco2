@@ -50,7 +50,7 @@ pattern socket_shuffle() {
 pattern random_pattern(int from, int to, int count) {
     pattern result;
 
-    int rank;
+    int rank = 0;
     int res = MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     assert(res == 0);
 
