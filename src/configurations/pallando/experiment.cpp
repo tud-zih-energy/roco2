@@ -1,5 +1,6 @@
 #include "roco2/experiments/cpu_sets/cpu_set.hpp"
 #include "roco2/experiments/cpu_sets/cpu_set_generator.hpp"
+#include <mpi.h>
 #include <roco2/initialize.hpp>
 
 #include <roco2/cpu/topology.hpp>
@@ -49,9 +50,13 @@ pattern socket_shuffle() {
 pattern random_pattern(int from, int to, int count) {
     pattern result;
 
+    int rank;
+    int res = MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    assert(res == 0);
+
     for (int i = from; i <= to; i++) {
         for (int j = 0; j < count; j++) {
-            result.append(roco2::experiments::cpu_sets::make_random(i));
+            result.append(roco2::experiments::cpu_sets::make_random(i, rank));
         }
     }
 
