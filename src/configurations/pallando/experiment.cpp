@@ -71,7 +71,7 @@ void run_experiments(roco2::chrono::time_point& starting_point, bool eta_only) {
     assert(omp_get_num_threads() == 104);
 
     auto on_list =
-        block_pattern(1, false, triangle_shape::upper) >> socket_shuffle() >>
+        block_pattern(1, false, triangle_shape::upper) >> //socket_shuffle() >>
         stride_pattern(1, 52) >> (triangle_pattern(0, 12) && triangle_pattern(13, 25) &&
                                   triangle_pattern(26, 38) && triangle_pattern(39, 51)) >>
         stride_pattern(1, 13) >> (triangle_pattern(0, 12) && triangle_pattern(13, 25)) >>
@@ -81,7 +81,7 @@ void run_experiments(roco2::chrono::time_point& starting_point, bool eta_only) {
         (triangle_pattern(0, 12) && triangle_pattern(13, 25) && triangle_pattern(52, 64)) >>
         (triangle_pattern(0, 12) && triangle_pattern(13, 25) && triangle_pattern(52, 64) &&
          triangle_pattern(65, 77));
-    on_list = on_list >> random_pattern(14, 64, 5);
+    on_list = on_list >> random_pattern(1, 52, 10);
 
     // ------ EDIT GENERIC SETTINGS ABOVE THIS LINE ------
 
