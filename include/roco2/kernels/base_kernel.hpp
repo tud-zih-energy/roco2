@@ -29,7 +29,7 @@ namespace kernels
         {
             roco2::metrics::threads::instance().write(on.num_threads());
             roco2::metrics::metric_guard<roco2::metrics::experiment> guard(this->tag());
-            if (std::find(on.begin(), on.end(), roco2::cpu::info::current_thread()) != on.end())
+            if (on.contains(roco2::cpu::info::current_thread()))
             {
 
                 this->run_kernel(until);
