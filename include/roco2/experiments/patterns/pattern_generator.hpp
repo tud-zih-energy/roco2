@@ -152,6 +152,16 @@ namespace experiments
             return result;
         }
 
+
+        // example for 24 CPUs with stride_pattern(1, 8)
+        // [#.......#.......#]
+        // [##......##......##]
+        // [###.....###.....###]
+        // [####....####....####]
+        // [#####...#####...#####]
+        // [######..######..######]
+        // [#######.#######.#######]
+        // [########################]
         inline pattern stride_pattern(std::size_t block_size, std::size_t stride_size)
         {
             if (omp_get_num_threads() % block_size != 0)
@@ -195,6 +205,33 @@ namespace experiments
                 result.append(range);
             }
 
+            return result;
+        }
+
+        /**
+         * enqueues a single pattern as provided by the on_list
+         */
+        inline pattern raw_pattern(std::vector<bool> on_list)
+        {
+            if (static_cast<std::size_t>(omp_get_num_threads()) != on_list.size())
+            {
+                roco2::log::warn() << "requested number of CPUs (" << on_list.size() << ")"
+                                   << "does NOT match number of available threads ("
+                                   << omp_get_num_threads()
+                                   << ")";
+            }
+
+
+            cpu_sets::cpu_set cpu_set_range;
+
+            for (std::size_t num_cpu = 0; num_cpu < on_list.size(); num_cpu++) {
+                if (on_list[num_cpu]) {
+                    cpu_set_range.add(num_cpu);
+                }
+            }
+
+            pattern result;
+            result.append(cpu_set_range);
             return result;
         }
     }
