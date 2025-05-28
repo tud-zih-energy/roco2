@@ -47,6 +47,7 @@ namespace experiments
                 length = std::max(length * factor, min_length);
             }
 
+            roco2::metrics::threads::instance().write(on_cpus.num_threads());
             roco2::metrics::metric_guard<roco2::metrics::experiment> guard(cpu_kernel.tag() + gpu_kernel.tag());
 
             starting_point += length;
@@ -63,6 +64,7 @@ namespace experiments
                 length = std::max(length * factor, min_length);
             }
 
+            roco2::metrics::threads::instance().write(on_cpus.num_threads());
             roco2::metrics::metric_guard<roco2::metrics::experiment> guard(cpu_kernel.tag());
 
             starting_point += length;

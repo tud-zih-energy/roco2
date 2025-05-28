@@ -32,6 +32,7 @@ namespace experiments
         {
             starting_point += length;
 
+            roco2::metrics::threads::instance().write(on_cpus.num_threads());
             roco2::metrics::metric_guard<roco2::metrics::experiment> guard(cpu_kernel.tag() + gpu_kernel.tag());
             
             gpu_kernel.run(on_gpus);
@@ -44,6 +45,7 @@ namespace experiments
         {
             starting_point += length;
 
+            roco2::metrics::threads::instance().write(on_cpus.num_threads());
             roco2::metrics::metric_guard<roco2::metrics::experiment> guard(cpu_kernel.tag());
             
             cpu_kernel.run(starting_point, on_cpus);
