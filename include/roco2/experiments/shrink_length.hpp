@@ -4,6 +4,8 @@
 #include <roco2/experiments/base.hpp>
 #include <roco2/log.hpp>
 
+#include <algorithm>
+
 namespace roco2
 {
 
@@ -35,14 +37,36 @@ namespace experiments
             }
         }
 
-        virtual void run(kernels::base_kernel& kernel, ranges::cpu_range on) override
+        virtual void run(roco2::kernels::base_kernel& cpu_kernel,
+                         roco2::experiments::cpu_sets::cpu_set on_cpus,
+                         roco2::kernels::base_gpu_kernel& gpu_kernel,
+                         roco2::experiments::gpu_sets::gpu_set on_gpus) override
         {
             if (length > min_length)
             {
                 length = std::max(length * factor, min_length);
             }
 
-            this->run_for(kernel, on, length);
+            roco2::metrics::metric_guard<roco2::metrics::experiment> guard(cpu_kernel.tag() + gpu_kernel.tag());
+
+            starting_point += length;
+            gpu_kernel.run(on_gpus);
+            cpu_kernel.run(starting_point, on_cpus);
+            gpu_kernel.stop();
+        }
+
+        virtual void run(roco2::kernels::base_kernel& cpu_kernel,
+                         roco2::experiments::cpu_sets::cpu_set on_cpus) override
+        {
+            if (length > min_length)
+            {
+                length = std::max(length * factor, min_length);
+            }
+
+            roco2::metrics::metric_guard<roco2::metrics::experiment> guard(cpu_kernel.tag());
+
+            starting_point += length;
+            cpu_kernel.run(starting_point, on_cpus);
         }
 
     private:
