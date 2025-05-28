@@ -12,6 +12,8 @@
 #include <atomic>
 #include <thread>
 
+#include <cassert>
+
 namespace roco2
 {
 namespace kernels
@@ -24,6 +26,8 @@ namespace kernels
 
         void run(const roco2::experiments::gpu_sets::gpu_set& on)
         {
+            assert(!thread_.joinable());
+
             thread_ = std::thread([&](){     
                 this->run_kernel(on);
             });
