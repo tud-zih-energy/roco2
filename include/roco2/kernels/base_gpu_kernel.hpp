@@ -26,11 +26,14 @@ namespace kernels
 
         void run(const roco2::experiments::gpu_sets::gpu_set& on)
         {
-            assert(!thread_.joinable());
+#pragma omp master 
+            {
+                assert(!thread_.joinable());
 
-            thread_ = std::thread([&](){     
-                this->run_kernel(on);
-            });
+                thread_ = std::thread([&](){     
+                    this->run_kernel(on);
+                });
+            }
         }
 
         virtual experiment_tag_t tag() const = 0;
