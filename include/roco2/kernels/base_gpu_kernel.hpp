@@ -24,13 +24,13 @@ namespace kernels
     public:
         using experiment_tag_t = std::size_t;
 
-        void base_gpu_kernel::run(const roco2::experiments::gpu_sets::gpu_set& on)
+        void run(const roco2::experiments::gpu_sets::gpu_set& on)
         {
 #pragma omp master
             {
                 assert(threads_.empty());
 
-                for (int gpu_id = 0; gpu_id < on.max(); gpu_id++)
+                for (std::size_t gpu_id = 0; gpu_id < on.max(); gpu_id++)
                 {
                     if (!on.contains(gpu_id))
                     {

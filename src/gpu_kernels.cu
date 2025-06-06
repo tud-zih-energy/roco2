@@ -66,9 +66,9 @@ namespace kernels
             cudaMalloc(&d_B_[gpu_id], NUM_BYTES);
             cudaMalloc(&d_C_[gpu_id], NUM_BYTES);
 
-            cudaMemcpy(d_A_[gpu_id], h_A_, NUM_BYTES, cudaMemcpyHostToDevice);
-            cudaMemcpy(d_B_[gpu_id], h_A_, NUM_BYTES, cudaMemcpyHostToDevice);
-            cudaMemcpy(d_C_[gpu_id], h_A_, NUM_BYTES, cudaMemcpyHostToDevice);
+            cudaMemcpy(d_A_[gpu_id], h_A, NUM_BYTES, cudaMemcpyHostToDevice);
+            cudaMemcpy(d_B_[gpu_id], h_B, NUM_BYTES, cudaMemcpyHostToDevice);
+            cudaMemcpy(d_C_[gpu_id], h_C, NUM_BYTES, cudaMemcpyHostToDevice);
         }
 
         delete[] h_A;
@@ -76,7 +76,7 @@ namespace kernels
         delete[] h_C;
 
         int numberOfSMs;
-        cuDeviceGetAttribute(&numberOfSMs, cudaDevAttrMultiProcessorCount, 0);
+        cuDeviceGetAttribute(&numberOfSMs, CU_DEVICE_ATTRIBUTE_MULTIPROCESSOR_COUNT, 0);
         int sizeOfWarps = 32;
 
         N = numberOfSMs * sizeOfWarps;
@@ -87,6 +87,11 @@ namespace kernels
 
     naive_mm_gpu_kernel::~naive_mm_gpu_kernel()
     {
+        int num_gpus;
+        cudaGetDeviceCount(&num_gpus);
+
+        assert(d_A_.size() == num_gpus);
+
         for (int gpu_id = 0; gpu_id < num_gpus; gpu_id++)
         {
             cudaSetDevice(gpu_id);
