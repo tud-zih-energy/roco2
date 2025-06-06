@@ -35,7 +35,7 @@ if (USE_SCOREP)
 endif()
 if (USE_CUDA)
     target_sources(roco2_core PUBLIC gpu_kernels.cu)
-    # target_link_libraries(roco2_core PUBLIC CUDA::cudart)
+    target_link_libraries(roco2_core PUBLIC CUDA::cuda_driver)
 endif()
 
 

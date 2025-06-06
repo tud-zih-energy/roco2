@@ -73,6 +73,7 @@ endif()
 option(USE_CUDA "Enable CUDA GPU support" FALSE)
 if (USE_CUDA)
     enable_language(CUDA)
+    find_package(CUDAToolkit REQUIRED)
 endif()
 
 

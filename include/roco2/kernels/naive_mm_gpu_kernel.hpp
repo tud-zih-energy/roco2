@@ -21,14 +21,11 @@ namespace kernels
         void run_kernel(int on_gpu) override;
 
     private:
-        std::vector<void*> d_A_;
-        std::vector<void*> d_B_;
-        std::vector<void*> d_C_;
+        std::vector<double*> d_A_;
+        std::vector<double*> d_B_;
+        std::vector<double*> d_C_;
 
         int N;
-
-        dim3 gridDim;
-        dim3 blockDim;
     };
 } // namespace kernels
 } // namespace roco2

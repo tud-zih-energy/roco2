@@ -14,6 +14,8 @@
 
 #include <cassert>
 
+#include <omp.h>
+
 namespace roco2
 {
 namespace kernels
@@ -26,9 +28,10 @@ namespace kernels
 
         void run(const roco2::experiments::gpu_sets::gpu_set& on)
         {
-#pragma omp master
+            if (omp_get_thread_num() == 0)
             {
                 assert(threads_.empty());
+                running_ = true;
 
                 for (std::size_t gpu_id = 0; gpu_id < on.max(); gpu_id++)
                 {

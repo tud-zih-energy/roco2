@@ -1,8 +1,6 @@
 #include <roco2/initialize.hpp>
 
 #include <roco2/cpu/c_state_limit.hpp>
-#include <roco2/cpu/ddcm.hpp>
-#include <roco2/cpu/frequency.hpp>
 #include <roco2/cpu/topology.hpp>
 
 #include <roco2/memory/numa.hpp>
@@ -29,11 +27,9 @@
 #include <roco2/kernels/naive_mm_gpu_kernel.hpp>
 
 #include <roco2/task/experiment_task.hpp>
+#include <roco2/task/experiment_gpu_task.hpp>
 #include <roco2/task/lambda_task.hpp>
 #include <roco2/task/task_plan.hpp>
-
-#include <string>
-#include <vector>
 
 using namespace roco2::experiments::patterns;
 
@@ -61,7 +57,7 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
 
     auto on_list = sub_block_pattern(4, 16);
 
-    auto on_gpu_list = std::vector<gpu_set>{ gpu_set(0), gpu_set(1), gpu_set(2), gpu_set(3) };
+    auto on_gpu_list = std::vector<roco2::experiments::gpu_sets::gpu_set>{  {0}, };
 
     // ------ EDIT GENERIC SETTINGS ABOVE THIS LINE ------
 
@@ -85,14 +81,14 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
     // ------ EDIT TASK PLAN BELOW THIS LINE ------
 
     // do one full idle
-    experiment(idle, roco2::experiments::cpu_sets::all_cpus());
+    /* experiment(idle, roco2::experiments::cpu_sets::all_cpus()); */
 
     for (const auto& on : on_list)
     {
         for (const auto& on_gpu : on_gpu_list)
         {
-            plan.push_back(roco2::task::experiment_task(exp, idle, on, cuda_mm, on_gpu));
-            plan.push_back(roco2::task::experiment_task(exp, mm, on, cuda_mm, on_gpu));
+            plan.push_back(roco2::task::experiment_gpu_task(exp, idle, on, cuda_mm, on_gpu));
+            plan.push_back(roco2::task::experiment_gpu_task(exp, mm, on, cuda_mm, on_gpu));
         }
     }
 
