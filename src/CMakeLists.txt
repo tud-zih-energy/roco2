@@ -30,6 +30,11 @@ if (USE_SCOREP)
         target_compile_definitions(roco2_core PUBLIC "ROCO2_HIGHLOW_INSTRUMENT_PHASES")
     endif()
 endif()
+if (USE_CUDA)
+    target_sources(roco2_core PUBLIC gpu_kernels.cu)
+    # target_link_libraries(roco2_core PUBLIC CUDA::cudart)
+endif()
+
 
 add_library(roco2_main STATIC main.cpp)
 target_link_libraries(roco2_main PUBLIC roco2)

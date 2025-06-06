@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.16)
 project(roco2)
 
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")
@@ -69,6 +69,12 @@ if (X86Adapt_FOUND)
 else()
     message(STATUS "X86Adapt wasn't found, DDCM not available.")
 endif()
+
+option(USE_CUDA "Enable CUDA GPU support" FALSE)
+if (USE_CUDA)
+    enable_language(CUDA)
+endif()
+
 
 if (USE_FIRESTARTER)
     include(cmake/BuildFirestarter.cmake)

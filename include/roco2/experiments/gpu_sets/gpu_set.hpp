@@ -1,7 +1,6 @@
 
 #pragma once
 
-
 #include <bitset>
 #include <cstddef>
 #include <iostream>
@@ -24,6 +23,11 @@ namespace experiments
 
             gpu_set() = default;
 
+            gpu_set(std::size_t gpu)
+            {
+                add(gpu);
+            }
+
             gpu_set(const std::set<std::size_t>& range)
             {
                 for (auto gpu : range)
@@ -45,11 +49,12 @@ namespace experiments
                 return data.test(gpu_id);
             }
 
-            std::size_t max() const {
+            std::size_t max() const
+            {
                 return MAX_GPUS;
             }
 
-        //private:
+            // private:
             container data;
         };
 
@@ -80,7 +85,6 @@ namespace experiments
             a.data ^= b.data;
             return a;
         }
-    }
-}
-}
-
+    } // namespace gpu_sets
+} // namespace experiments
+} // namespace roco2
