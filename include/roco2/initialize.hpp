@@ -1,6 +1,7 @@
 #ifndef INCLUDE_ROCO2_INITIALIZE_HPP
 #define INCLUDE_ROCO2_INITIALIZE_HPP
 
+#include "roco2/cpu/mapping.hpp"
 #include <roco2/chrono/chrono.hpp>
 #include <roco2/cpu/affinity.hpp>
 #include <roco2/cpu/info.hpp>
@@ -15,7 +16,6 @@
 #include <omp.h>
 
 #include <thread>
-#include <vector>
 
 namespace roco2
 {
@@ -72,10 +72,12 @@ public:
         }
 
         log::debug() << "Checking affinity of thread to correct cpu";
-        if (cpu::info::current_cpu() != cpu::info::current_thread())
+        if (cpu::info::current_cpu() !=
+            cpu::mapping::instance().cpu_for_thread(cpu::info::current_thread()))
         {
             raise("Thread ", cpu::info::current_thread(),
-                  " is on wrong cpu: ", cpu::info::current_cpu());
+                  " is on wrong cpu: ", cpu::info::current_cpu(), " expected: ",
+                  cpu::mapping::instance().cpu_for_thread(cpu::info::current_thread()));
         }
 
         thread_local_memory();

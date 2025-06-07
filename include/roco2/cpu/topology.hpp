@@ -51,7 +51,7 @@ namespace cpu
 
             return res;
         }
-    }
+    } // namespace detail
 
     class topology
     {
@@ -70,9 +70,9 @@ namespace cpu
             }
 
             auto online = detail::parse_list(online_list);
-            auto present = detail::parse_list(present_list);
+            present_cpus_ = detail::parse_list(present_list);
 
-            for (auto coreid : present)
+            for (auto coreid : present_cpus_)
             {
                 if (online.count(coreid) == 1)
                 {
@@ -112,8 +112,9 @@ namespace cpu
         }
 
     public:
-        struct core
+        class core
         {
+        public:
             uint32_t id;
             uint32_t socket;
             bool online;
@@ -235,15 +236,20 @@ namespace cpu
             return sockets_;
         }
 
+        const std::set<std::uint32_t>& present_cpus() const {
+            return present_cpus_;
+        }
+
         friend class core;
 
     private:
         std::vector<core> cores_;
         std::vector<socket> sockets_;
+        std::set<std::uint32_t> present_cpus_;
 
         const static std::string base_path;
     };
-}
-}
+} // namespace cpu
+} // namespace roco2
 
 #endif // INCLUDE_ROCO2_CPU_TOPOLOGY_HPP

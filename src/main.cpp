@@ -1,4 +1,5 @@
 #include <roco2/initialize.hpp>
+#include <roco2/cpu/mapping.hpp>
 
 #include <roco2/chrono/chrono.hpp>
 #include <roco2/log.hpp>
@@ -6,7 +7,6 @@
 #include <nitro/broken_options/parser.hpp>
 
 #include <string>
-#include <vector>
 
 #include <omp.h>
 
@@ -28,6 +28,10 @@ int main(int argc, char** argv)
     parser.toggle("help").short_name("h");
     parser.toggle("debug").short_name("d");
     parser.toggle("eta_only").short_name("e");
+
+    parser.option("ignore-cpu").short_name("c").default_value("");
+
+    std::string ignore_pattern;
 
     try
     {
@@ -51,6 +55,8 @@ int main(int argc, char** argv)
         }
 
         eta_only = options.given("eta_only");
+
+        ignore_pattern = options.get("ignore-cpu");
     }
     catch (nitro::broken_options::parsing_error& e)
     {
@@ -65,6 +71,8 @@ int main(int argc, char** argv)
     roco2::log::info() << "Starting with " << omp_get_max_threads() << " threads.";
 
     roco2::initialize::master();
+
+    roco2::cpu::mapping::instance().initialize(ignore_pattern);
 
     // Throwing exceptions out of a parellel regions doesn't seem smart.
     // Therefore we have this boolean flag here.

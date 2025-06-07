@@ -4,9 +4,12 @@
 #include <roco2/exception.hpp>
 #include <roco2/log.hpp>
 
+#include <set>
+
 #include <omp.h>
 #include <sched.h>
 
+#include <cstdio>
 #include <cstdlib>
 
 namespace roco2
@@ -40,8 +43,20 @@ namespace cpu
 
             return result;
         }
+
+        static unsigned int num_threads()
+        {
+            int result = omp_get_num_threads();
+
+            if (result == -1)
+            {
+                raise("Couldn't get number of threads");
+            }
+
+            return result;
+        }
     };
-}
-}
+} // namespace cpu
+} // namespace roco2
 
 #endif // INCLUDE_ROCO2_CPU_INFO_HPP
