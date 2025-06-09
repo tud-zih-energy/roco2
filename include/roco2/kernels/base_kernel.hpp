@@ -1,6 +1,8 @@
 #ifndef INCLUDE_ROCO2_KERNELS_KERNEL_HPP
 #define INCLUDE_ROCO2_KERNELS_KERNEL_HPP
 
+#include "roco2/chrono/chrono.hpp"
+#include <chrono>
 #include <roco2/chrono/util.hpp>
 #include <roco2/cpu/info.hpp>
 #include <roco2/experiments/cpu_sets/cpu_set.hpp>
@@ -10,10 +12,7 @@
 #include <roco2/metrics/utility.hpp>
 #include <roco2/scorep.hpp>
 
-#include <algorithm>
-#include <chrono>
 #include <thread>
-#include <vector>
 
 namespace roco2
 {
@@ -25,19 +24,24 @@ namespace kernels
     public:
         using experiment_tag = std::size_t;
 
-        void run(roco2::chrono::time_point until, roco2::experiments::cpu_sets::cpu_set on)
+        void run(roco2::chrono::time_point until, roco2::experiments::cpu_sets::cpu_set on,
+                 std::function<void()> progress)
         {
             if (on.contains(roco2::cpu::info::current_thread()))
             {
-
-                this->run_kernel(until);
+                this->run_kernel(until, progress);
             }
             else
             {
 #ifdef HAS_SCOREP
                 SCOREP_USER_REGION("idle_sleep", SCOREP_USER_REGION_TYPE_FUNCTION)
 #endif
-                std::this_thread::sleep_until(until);
+                while (roco2::chrono::now() < until)
+                {
+                    progress();
+                    std::this_thread::sleep_until(roco2::chrono::now() +
+                                                  std::chrono::milliseconds(10));
+                }
 
                 roco2::metrics::utility::instance().write(1);
             }
@@ -46,7 +50,8 @@ namespace kernels
         virtual experiment_tag tag() const = 0;
 
     private:
-        virtual void run_kernel(roco2::chrono::time_point until) = 0;
+        virtual void run_kernel(roco2::chrono::time_point until,
+                                std::function<void()>& progress) = 0;
 
     public:
         virtual ~base_kernel()

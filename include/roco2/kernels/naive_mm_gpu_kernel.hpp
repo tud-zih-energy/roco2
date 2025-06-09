@@ -2,6 +2,8 @@
 
 #include <roco2/kernels/base_gpu_kernel.hpp>
 
+#include <cuda.h>
+
 namespace roco2
 {
 namespace kernels
@@ -18,7 +20,7 @@ namespace kernels
             return 100;
         }
 
-        void run_kernel(int on_gpu) override;
+        void schedule_task(int gpu_id, cudaStream_t stream) override;
 
     private:
         std::vector<double*> d_A_;

@@ -40,7 +40,7 @@ namespace kernels
         }
 
     private:
-        void run_kernel(roco2::chrono::time_point tp) override
+        void run_kernel(roco2::chrono::time_point tp, std::function<void()>& progress) override
         {
 #ifdef HAS_SCOREP
             SCOREP_USER_REGION("high_low_bs_kernel", SCOREP_USER_REGION_TYPE_FUNCTION)
@@ -83,6 +83,7 @@ namespace kernels
                 }
 
                 loops++;
+                progress();
             }
         }
 

@@ -111,3 +111,6 @@ macro(Roco2Configuration CONF )
 endmacro()
 
 add_subdirectory(src)
+
+add_executable(coro_test coro_test.cu)
+target_link_libraries(coro_test PUBLIC roco2_core)

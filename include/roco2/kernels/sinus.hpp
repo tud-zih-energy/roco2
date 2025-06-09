@@ -22,7 +22,7 @@ namespace kernels
         }
 
     private:
-        virtual void run_kernel(chrono::time_point until) override
+        virtual void run_kernel(chrono::time_point until, std::function<void()>& progress) override
         {
 #ifdef HAS_SCOREP
             SCOREP_USER_REGION("sine_kernel", SCOREP_USER_REGION_TYPE_FUNCTION)
@@ -40,6 +40,7 @@ namespace kernels
                 }
 
                 loops++;
+                progress();
             } while (std::chrono::high_resolution_clock::now() < until);
 
             roco2::metrics::utility::instance().write(loops);

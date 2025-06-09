@@ -87,6 +87,7 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
     {
         for (const auto& on_gpu : on_gpu_list)
         {
+            plan.push_back(roco2::task::experiment_task(exp, mm, on));
             plan.push_back(roco2::task::experiment_gpu_task(exp, idle, on, cuda_mm, on_gpu));
             plan.push_back(roco2::task::experiment_gpu_task(exp, mm, on, cuda_mm, on_gpu));
         }

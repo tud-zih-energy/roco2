@@ -8,13 +8,15 @@
 #include <roco2/metrics/utility.hpp>
 #include <roco2/scorep.hpp>
 
-#include <atomic>
-#include <thread>
 #include <vector>
 
 #include <cassert>
 
 #include <omp.h>
+
+#include <cuda.h>
+#include <cuda_runtime.h>
+#include <cuda_runtime_api.h>
 
 namespace roco2
 {
@@ -26,21 +28,48 @@ namespace kernels
     public:
         using experiment_tag_t = std::size_t;
 
-        void run(const roco2::experiments::gpu_sets::gpu_set& on)
+        void setup_streams(const roco2::experiments::gpu_sets::gpu_set& on)
         {
             if (omp_get_thread_num() == 0)
             {
-                assert(threads_.empty());
-                running_ = true;
+                assert(streams_.empty());
 
                 for (std::size_t gpu_id = 0; gpu_id < on.max(); gpu_id++)
                 {
                     if (!on.contains(gpu_id))
                     {
+                        streams_.push_back(nullptr);
                         continue;
                     }
 
-                    threads_.emplace_back([this, gpu_id]() { this->run_kernel(gpu_id); });
+                    cudaSetDevice(gpu_id);
+
+                    cudaStream_t stream;
+                    cudaStreamCreate(&stream);
+
+                    schedule_task(gpu_id, stream);
+
+                    streams_.push_back(stream);
+                }
+            }
+        }
+
+        virtual void schedule_task(int gpu_id, cudaStream_t s) = 0;
+
+        void progress()
+        {
+            for (int gpu_id = 0; (unsigned)gpu_id < streams_.size(); gpu_id++)
+            {
+                auto stream = streams_[gpu_id];
+
+                if (stream == nullptr)
+                    continue;
+
+                cudaSetDevice(gpu_id);
+
+                if (cudaStreamQuery(stream) == cudaSuccess)
+                {
+                    schedule_task(gpu_id, stream);
                 }
             }
         }
@@ -49,24 +78,17 @@ namespace kernels
 
         void stop()
         {
-            running_ = false;
-
-            for (auto& thread : threads_)
+            for (auto stream : streams_)
             {
-                assert(thread.joinable());
-                thread.join();
+                cudaStreamSynchronize(stream);
+                cudaStreamDestroy(stream);
             }
 
-            threads_.clear();
+            streams_.clear();
         }
 
     private:
-        virtual void run_kernel(int on_gpu) = 0;
-
-        std::vector<std::thread> threads_;
-
-    protected:
-        std::atomic<bool> running_ = false;
+        std::vector<cudaStream_t> streams_;
 
     public:
         virtual ~base_gpu_kernel()

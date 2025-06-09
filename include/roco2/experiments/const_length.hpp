@@ -12,8 +12,8 @@ namespace experiments
     class const_lenght : public base
     {
     public:
-        using base::time_point;
         using base::duration;
+        using base::time_point;
 
         const_lenght(time_point starting_point, duration length)
         : base(starting_point), length(length)
@@ -33,10 +33,11 @@ namespace experiments
             starting_point += length;
 
             roco2::metrics::threads::instance().write(on_cpus.num_threads());
-            roco2::metrics::metric_guard<roco2::metrics::experiment> guard(cpu_kernel.tag() + gpu_kernel.tag());
-            
-            gpu_kernel.run(on_gpus);
-            cpu_kernel.run(starting_point, on_cpus);
+            roco2::metrics::metric_guard<roco2::metrics::experiment> guard(cpu_kernel.tag() +
+                                                                           gpu_kernel.tag());
+
+            gpu_kernel.setup_streams(on_gpus);
+            cpu_kernel.run(starting_point, on_cpus, [&gpu_kernel]() { gpu_kernel.progress(); });
             gpu_kernel.stop();
         }
 
@@ -47,13 +48,14 @@ namespace experiments
 
             roco2::metrics::threads::instance().write(on_cpus.num_threads());
             roco2::metrics::metric_guard<roco2::metrics::experiment> guard(cpu_kernel.tag());
-            
-            cpu_kernel.run(starting_point, on_cpus);
+
+            cpu_kernel.run(starting_point, on_cpus, [](){});
         }
+
     private:
         duration length;
     };
-}
-}
+} // namespace experiments
+} // namespace roco2
 
 #endif // INCLUDE_ROCO2_EXPERIMENTS_CONST_LENGTH_HPP

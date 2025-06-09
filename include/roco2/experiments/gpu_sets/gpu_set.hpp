@@ -3,6 +3,7 @@
 
 #include <bitset>
 #include <cstddef>
+#include <initializer_list>
 #include <iostream>
 #include <set>
 
@@ -26,6 +27,12 @@ namespace experiments
             gpu_set(std::size_t gpu)
             {
                 add(gpu);
+            }
+
+            gpu_set(std::initializer_list<int> gpus) {
+                for(auto gpu : gpus) {
+                    add(gpu);
+                }
             }
 
             gpu_set(const std::set<std::size_t>& range)

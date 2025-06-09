@@ -24,7 +24,7 @@ namespace kernels
         }
 
     private:
-        void run_kernel(roco2::chrono::time_point until) override;
+        void run_kernel(roco2::chrono::time_point until, std::function<void()>& progress) override;
 
         int (*firestarter_function_)(void*);
         int (*firestarter_init_)(void*);

@@ -20,7 +20,7 @@ namespace kernels
         }
 
     private:
-        void run_kernel(roco2::chrono::time_point tp) override
+        void run_kernel(roco2::chrono::time_point tp, std::function<void()>& progress) override
         {
 #ifdef HAS_SCOREP
             SCOREP_USER_REGION("busy_wait_kernel", SCOREP_USER_REGION_TYPE_FUNCTION)
@@ -30,6 +30,11 @@ namespace kernels
             while (std::chrono::high_resolution_clock::now() < tp)
             {
                 loops++;
+
+                if (loops % 1000000)
+                {
+                    progress();
+                }
             }
             roco2::metrics::utility::instance().write(loops);
         }

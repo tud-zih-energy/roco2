@@ -76,7 +76,6 @@ namespace kernels
 
             std::cout << "N: " << N << std::endl;
 
- 
             double* h_A = new double[N * N];
             double* h_B = new double[N * N];
             double* h_C = new double[N * N];
@@ -121,7 +120,7 @@ namespace kernels
             delete[] h_B;
             delete[] h_C;
 
-           gridDim = dim3(numberOfSMs, numberOfSMs);
+            gridDim = dim3(numberOfSMs, numberOfSMs);
             blockDim = dim3(sizeOfWarps / 2, sizeOfWarps / 2);
         }
     }
@@ -146,29 +145,23 @@ namespace kernels
         }
     }
 
-    void naive_mm_gpu_kernel::run_kernel(int gpu_id)
+    void naive_mm_gpu_kernel::schedule_task(int gpu_id, cudaStream_t stream)
     {
         std::cout << "cuda thread started for device: " << gpu_id << std::endl;
 
         cudaSetDevice(gpu_id);
 
-        std::size_t loops = 0;
+        // std::size_t loops = 0;
 
         const auto REPEATS = 10;
 
-        while (running_)
+        for (int i = 0; i < REPEATS; i++)
         {
-            for (int i = 0; i < REPEATS; i++)
-            {
-                matrixMulNaive<<<gridDim, blockDim>>>(d_A_[gpu_id], d_B_[gpu_id], d_C_[gpu_id], N);
-            }
-            cudaDeviceSynchronize();
-            CHECK_CUDA_ERROR("cudaDeviceSync")
-
-            loops += REPEATS;
-            log::info() << loops << " loops done";
+            matrixMulNaive<<<gridDim, blockDim, 0, stream>>>(d_A_[gpu_id], d_B_[gpu_id],
+                                                             d_C_[gpu_id], N);
         }
-        roco2::metrics::utility::instance().write(loops);
+
+        //         roco2::metrics::utility::instance().write(loops);
     }
 } // namespace kernels
 } // namespace roco2

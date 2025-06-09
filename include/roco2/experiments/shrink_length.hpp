@@ -33,7 +33,7 @@ namespace experiments
             }
             else
             {
-                return lenght;
+                return length;
             }
         }
 

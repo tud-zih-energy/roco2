@@ -36,7 +36,7 @@ namespace kernels
             }
         }
 
-        virtual void run_kernel(chrono::time_point until) override
+        virtual void run_kernel(chrono::time_point until, std::function<void()>& progress) override
         {
 #ifdef HAS_SCOREP
             SCOREP_USER_REGION("compute_kernel", SCOREP_USER_REGION_TYPE_FUNCTION)
@@ -56,6 +56,8 @@ namespace kernels
                 compute_kernel(vec_A, vec_B, vec_C, 32);
 
                 loops++;
+
+                progress();
             }
 
             roco2::metrics::utility::instance().write(loops);

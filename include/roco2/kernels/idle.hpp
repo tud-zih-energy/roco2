@@ -20,13 +20,17 @@ namespace kernels
         }
 
     private:
-        void run_kernel(roco2::chrono::time_point tp) override
+        void run_kernel(roco2::chrono::time_point tp, std::function<void()>& progress) override
         {
 #ifdef HAS_SCOREP
             SCOREP_USER_REGION("idle_sleep", SCOREP_USER_REGION_TYPE_FUNCTION)
 #endif
+            while (roco2::chrono::now() < tp)
+            {
+                progress();
+                std::this_thread::sleep_until(roco2::chrono::now() + std::chrono::milliseconds(10));
+            }
 
-            std::this_thread::sleep_until(tp);
             roco2::metrics::utility::instance().write(1);
         }
     };

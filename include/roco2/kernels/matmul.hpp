@@ -29,7 +29,7 @@ namespace kernels
             return 7;
         }
 
-        virtual void run_kernel(chrono::time_point until) override
+        virtual void run_kernel(chrono::time_point until, std::function<void()>& progress) override
         {
 #ifdef HAS_SCOREP
             SCOREP_USER_REGION("matmul_kernel", SCOREP_USER_REGION_TYPE_FUNCTION)
@@ -58,6 +58,7 @@ namespace kernels
 #endif
 
                 loops++;
+                progress();
             } while (std::chrono::high_resolution_clock::now() < until);
 
             roco2::metrics::utility::instance().write(loops);
