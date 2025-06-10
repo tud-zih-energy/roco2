@@ -17,7 +17,7 @@ git_submodule_update()
 
 add_library(roco2 INTERFACE)
 
-target_compile_features(roco2 INTERFACE cxx_std_14)
+target_compile_features(roco2 INTERFACE cxx_std_20)
 target_compile_options(roco2 INTERFACE $<$<CONFIG:Debug>:-O0> -Wall -Wextra)
 
 #enable C99
