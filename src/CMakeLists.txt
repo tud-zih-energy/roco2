@@ -18,7 +18,7 @@ list(APPEND roco2_core_SOURCES firestarter_kernel.cpp)
 
 add_library(roco2_core STATIC ${roco2_core_SOURCES})
 
-target_link_libraries(roco2_core PUBLIC roco2 Nitro::env)
+target_link_libraries(roco2_core PUBLIC roco2 Nitro::env Nitro::options)
 
 target_link_libraries(roco2_core PUBLIC
     firestartercore

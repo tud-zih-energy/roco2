@@ -3,7 +3,7 @@
 #include <roco2/chrono/chrono.hpp>
 #include <roco2/log.hpp>
 
-#include <nitro/broken_options/parser.hpp>
+#include <nitro/options/parser.hpp>
 
 #include <string>
 #include <vector>
@@ -23,7 +23,7 @@ int main(int argc, char** argv)
     // first assumption:
     // GOMP_CPU_AFFINITY or respectivly KMP_AFFINITY was set to a sane value.
 
-    nitro::broken_options::parser parser;
+    nitro::options::parser parser;
 
     parser.toggle("help").short_name("h");
     parser.toggle("debug").short_name("d");
@@ -52,7 +52,7 @@ int main(int argc, char** argv)
 
         eta_only = options.given("eta_only");
     }
-    catch (nitro::broken_options::parsing_error& e)
+    catch (nitro::options::parsing_error& e)
     {
         roco2::log::warn() << e.what();
         parser.usage();
