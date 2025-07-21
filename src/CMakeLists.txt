@@ -21,9 +21,7 @@ add_library(roco2_core STATIC ${roco2_core_SOURCES})
 target_link_libraries(roco2_core PUBLIC roco2 Nitro::env)
 
 target_link_libraries(roco2_core PUBLIC
-    "-Wl,--whole-archive"
-    firestartercombined
-    "-Wl,--no-whole-archive"
+    firestartercore
     )
 
 if (USE_SCOREP)
