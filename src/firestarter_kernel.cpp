@@ -8,6 +8,7 @@
 
 #include <firestarter/CPUTopology.hpp>
 #include <firestarter/Constants.hpp>
+#include <firestarter/Payload/PayloadControlFlowDescription.hpp>
 #include <firestarter/ProcessorInformation.hpp>
 #include <firestarter/X86/X86FunctionSelection.hpp>
 #include <firestarter/X86/X86ProcessorInformation.hpp>
@@ -34,7 +35,9 @@ namespace kernels
 
         compiled_payload_ptr = function_const_ref.payload()->compilePayload(
             function_const_ref.settings(), /*DumpRegisters=*/false,
-            /*ErrorDetection=*/false, /*PrintAssembler=*/false);
+            /*ErrorDetection=*/false, /*PrintAssembler=*/false,
+            /*ControlFlow=*/
+            ::firestarter::payload::HighLoadControlFlowDescription::kMaxIterationCount);
 
         auto buffersize_mem = function_const_ref.settings().totalBufferSizePerThread();
 
@@ -44,34 +47,31 @@ namespace kernels
         compiled_payload_ptr->init(memory->getMemoryAddress(), buffersize_mem / sizeof(uint64_t));
     }
 
-    void firestarter::stop_kernel(roco2::chrono::time_point until,
-                                  ::firestarter::LoadThreadWorkType& load_var)
-    {
-        std::this_thread::sleep_for(until - std::chrono::high_resolution_clock::now());
-        load_var = ::firestarter::LoadThreadWorkType::LoadStop;
-    }
-
     void firestarter::run_kernel(roco2::chrono::time_point until)
     {
 #ifdef HAS_SCOREP
         SCOREP_USER_REGION("firestarter_kernel", SCOREP_USER_REGION_TYPE_FUNCTION)
 #endif
-        load_var = ::firestarter::LoadThreadWorkType::LoadHigh;
-
-        // Create a new thread that terminates the load worker after the experiment time has
-        // elapsed
-        auto cntrl_thread = std::thread(&firestarter::stop_kernel, until, std::ref(load_var));
 
         const auto& memory = roco2::thread_local_memory().firestarter_memory;
+        std::size_t loops = 0;
 
-        auto iterations =
-            compiled_payload_ptr->highLoadFunction(memory->getMemoryAddress(), load_var,
-                                                   /*Iterations=*/0);
+        do
+        {
+#ifdef HAS_SCOREP
+            // SCOREP_USER_REGION("firestarter_kernel_loop", SCOREP_USER_REGION_TYPE_FUNCTION)
+#endif
+            /// Do not terminate the firestarter loop via the control variable and set it to
+            /// LoadHigh
+            ::firestarter::LoadThreadWorkType load_var =
+                ::firestarter::LoadThreadWorkType::LoadHigh;
+            (void)compiled_payload_ptr->highLoadFunction(memory->getMemoryAddress(), load_var,
+                                                         /*MaxNumIterations=*/loop_count);
 
-        roco2::metrics::utility::instance().write(iterations);
+            loops++;
+        } while (std::chrono::high_resolution_clock::now() < until);
 
-        // Wait for the termination thread to join.
-        cntrl_thread.join();
+        roco2::metrics::utility::instance().write(loops);
     }
 } // namespace kernels
 } // namespace roco2
