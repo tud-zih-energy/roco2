@@ -4,12 +4,14 @@
 
 #include <roco2/scorep.hpp>
 
-#include <cassert>
+#include <memory>
 
-extern "C"
-{
-#include <firestarter.h>
-}
+#include <firestarter/CPUTopology.hpp>
+#include <firestarter/Constants.hpp>
+#include <firestarter/Payload/PayloadControlFlowDescription.hpp>
+#include <firestarter/ProcessorInformation.hpp>
+#include <firestarter/X86/X86FunctionSelection.hpp>
+#include <firestarter/X86/X86ProcessorInformation.hpp>
 
 namespace roco2
 {
@@ -18,29 +20,31 @@ namespace kernels
 
     firestarter::firestarter()
     {
-        base_function_ = select_base_function();
+        ::firestarter::CPUTopology topology;
+        std::unique_ptr<::firestarter::ProcessorInformation> processor_infos =
+            std::make_unique<::firestarter::x86::X86ProcessorInformation>();
 
-        assert(base_function_ != FUNC_UNKNOWN);
+        auto function_ptr =
+            ::firestarter::x86::X86FunctionSelection().selectDefaultOrFallbackFunction(
+                processor_infos->cpuModel(), processor_infos->cpuFeatures(),
+                processor_infos->vendor(), processor_infos->model(),
+                topology.instructionCacheSize(),
+                topology.homogenousResourceCount().NumThreadsPerCore);
 
-        firestarter_init_ = reinterpret_cast<int (*)(void*)>(get_init_function(base_function_, 2));
-        firestarter_function_ =
-            reinterpret_cast<int (*)(void*)>(get_working_function(base_function_, 2));
+        const auto& function_const_ref = function_ptr->constRef();
 
-        assert(firestarter_init_ != nullptr);
-        assert(firestarter_function_ != nullptr);
+        compiled_payload_ptr = function_const_ref.payload()->compilePayload(
+            function_const_ref.settings(), /*DumpRegisters=*/false,
+            /*ErrorDetection=*/false, /*PrintAssembler=*/false,
+            /*ControlFlow=*/
+            ::firestarter::payload::HighLoadControlFlowDescription::kMaxIterationCount);
 
-        auto mem_size = get_memory_size(base_function_, 2);
-        (void)mem_size;
+        auto buffersize_mem = function_const_ref.settings().totalBufferSizePerThread();
 
-        auto& my_mem_buffer = roco2::thread_local_memory().firestarter_buffer;
+        auto& memory = roco2::thread_local_memory().firestarter_memory;
+        memory = ::firestarter::LoadWorkerMemory::allocate(buffersize_mem);
 
-        assert(mem_size / sizeof(double) <= my_mem_buffer.size());
-
-        threaddata_t data;
-
-        data.addrMem = reinterpret_cast<param_type>(my_mem_buffer.data());
-
-        firestarter_init_(&data);
+        compiled_payload_ptr->init(memory->getMemoryAddress(), buffersize_mem / sizeof(uint64_t));
     }
 
     void firestarter::run_kernel(roco2::chrono::time_point until)
@@ -49,17 +53,7 @@ namespace kernels
         SCOREP_USER_REGION("firestarter_kernel", SCOREP_USER_REGION_TYPE_FUNCTION)
 #endif
 
-        assert(firestarter_function_);
-
-        auto& my_mem_buffer = roco2::thread_local_memory().firestarter_buffer;
-
-        // check alignment requirements
-        assert(reinterpret_cast<param_type>(my_mem_buffer.data()) % 32 == 0);
-
-        threaddata_t data;
-        data.addrMem = reinterpret_cast<param_type>(my_mem_buffer.data());
-        data.addrHigh = loop_count;
-
+        const auto& memory = roco2::thread_local_memory().firestarter_memory;
         std::size_t loops = 0;
 
         do
@@ -67,7 +61,12 @@ namespace kernels
 #ifdef HAS_SCOREP
             // SCOREP_USER_REGION("firestarter_kernel_loop", SCOREP_USER_REGION_TYPE_FUNCTION)
 #endif
-            firestarter_function_(&data);
+            /// Do not terminate the firestarter loop via the control variable and set it to
+            /// LoadHigh
+            ::firestarter::LoadThreadWorkType load_var =
+                ::firestarter::LoadThreadWorkType::LoadHigh;
+            (void)compiled_payload_ptr->highLoadFunction(memory->getMemoryAddress(), load_var,
+                                                         /*MaxNumIterations=*/loop_count);
 
             loops++;
         } while (std::chrono::high_resolution_clock::now() < until);

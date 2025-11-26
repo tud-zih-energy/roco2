@@ -85,9 +85,8 @@ void run_experiments(roco2::chrono::time_point starting_point, bool eta_only)
 
     roco2::experiments::const_lenght exp(experiment_startpoint, experiment_duration);
 
-    auto experiment = [&](auto& kernel, const auto& on) {
-        plan.push_back(roco2::task::experiment_task(exp, kernel, on));
-    };
+    auto experiment = [&](auto& kernel, const auto& on)
+    { plan.push_back(roco2::task::experiment_task(exp, kernel, on)); };
 
     auto setting = [&](auto lambda) { plan.push_back(roco2::task::make_lambda_task(lambda)); };
 
